@@ -20,13 +20,16 @@ public class ActivityService extends BaseService {
      * @throws SQLException SQL异常
      */
     public boolean addActivity(Activity activity) throws SQLException {
-        String sql = "INSERT INTO activity (activity_type, title, description, status, hazard_level, activity_datetime, expected_unavailable_duration, created_by_staff_id, weather_id, area_id, building_id, active_flag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO activity (activity_type, title, description, status, priority, hazard_level, activity_datetime, expected_unavailable_duration, created_by_staff_id, weather_id, area_id, building_id, facility_type, active_flag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         int result = executeUpdate(sql, 
             activity.getActivityType(), activity.getTitle(), activity.getDescription(),
-            activity.getStatus(), activity.getHazardLevel(), activity.getDate(),
+            activity.getStatus(), "medium", // 默认优先级
+            activity.getHazardLevel(), activity.getDate(),
             activity.getExpectedDowntime(), activity.getCreatedByStaffId(),
-            activity.getWeatherId(), activity.getAreaId(), activity.getBuildingId(), "Y");
+            activity.getWeatherId(), activity.getAreaId(), activity.getBuildingId(),
+            "none", // 默认设施类型
+            "Y");
         
         return result > 0;
     }
@@ -67,8 +70,69 @@ public class ActivityService extends BaseService {
         List<Object> params = new java.util.ArrayList<>();
         
         for (Map.Entry<String, Object> entry : conditions.entrySet()) {
-            // 转换驼峰命名到下划线命名
-            String dbColumn = entry.getKey().replaceAll("([A-Z])", "_$1").toLowerCase();
+            // 特殊字段映射
+            String key = entry.getKey();
+            String dbColumn;
+            
+            // 手动映射特殊字段
+            switch (key) {
+                case "date":
+                    dbColumn = "activity_datetime";
+                    break;
+                case "expectedDowntime":
+                    dbColumn = "expected_unavailable_duration";
+                    break;
+                case "createdByStaffId":
+                    dbColumn = "created_by_staff_id";
+                    break;
+                case "actualCompletionDatetime":
+                    dbColumn = "actual_completion_datetime";
+                    break;
+                case "activityId":
+                    dbColumn = "activity_id";
+                    break;
+                case "activityType":
+                    dbColumn = "activity_type";
+                    break;
+                case "buildingId":
+                    dbColumn = "building_id";
+                    break;
+                case "weatherId":
+                    dbColumn = "weather_id";
+                    break;
+                case "areaId":
+                    dbColumn = "area_id";
+                    break;
+                case "roomId":
+                    dbColumn = "room_id";
+                    break;
+                case "levelId":
+                    dbColumn = "level_id";
+                    break;
+                case "squareId":
+                    dbColumn = "square_id";
+                    break;
+                case "gateId":
+                    dbColumn = "gate_id";
+                    break;
+                case "canteenId":
+                    dbColumn = "canteen_id";
+                    break;
+                case "hazardLevel":
+                    dbColumn = "hazard_level";
+                    break;
+                case "facilityType":
+                    dbColumn = "facility_type";
+                    break;
+                case "activeFlag":
+                    dbColumn = "active_flag";
+                    break;
+                default:
+                    // 常规驼峰命名转换为下划线命名
+                    dbColumn = key.replaceAll("([A-Z])", "_$1").toLowerCase();
+                    break;
+            }
+            
             sqlBuilder.append(" AND ").append(dbColumn).append(" = ?");
             params.add(entry.getValue());
         }
@@ -90,11 +154,75 @@ public class ActivityService extends BaseService {
         StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM activity WHERE active_flag = 'Y'");
         List<Object> params = new java.util.ArrayList<>();
         
-        for (Map.Entry<String, Object> entry : conditions.entrySet()) {
-            // 转换驼峰命名到下划线命名
-            String dbColumn = entry.getKey().replaceAll("([A-Z])", "_$1").toLowerCase();
-            sqlBuilder.append(" AND ").append(dbColumn).append(" = ?");
-            params.add(entry.getValue());
+        // 处理可能为null的conditions
+        if (conditions != null) {
+            for (Map.Entry<String, Object> entry : conditions.entrySet()) {
+                // 特殊字段映射
+                    String key = entry.getKey();
+                    String dbColumn;
+                    
+                    // 手动映射特殊字段
+                    switch (key) {
+                        case "date":
+                            dbColumn = "activity_datetime";
+                            break;
+                        case "expectedDowntime":
+                            dbColumn = "expected_unavailable_duration";
+                            break;
+                        case "createdByStaffId":
+                            dbColumn = "created_by_staff_id";
+                            break;
+                        case "actualCompletionDatetime":
+                            dbColumn = "actual_completion_datetime";
+                            break;
+                        case "activityId":
+                            dbColumn = "activity_id";
+                            break;
+                        case "activityType":
+                            dbColumn = "activity_type";
+                            break;
+                        case "buildingId":
+                            dbColumn = "building_id";
+                            break;
+                        case "weatherId":
+                            dbColumn = "weather_id";
+                            break;
+                        case "areaId":
+                            dbColumn = "area_id";
+                            break;
+                        case "roomId":
+                            dbColumn = "room_id";
+                            break;
+                        case "levelId":
+                            dbColumn = "level_id";
+                            break;
+                        case "squareId":
+                            dbColumn = "square_id";
+                            break;
+                        case "gateId":
+                            dbColumn = "gate_id";
+                            break;
+                        case "canteenId":
+                            dbColumn = "canteen_id";
+                            break;
+                        case "hazardLevel":
+                            dbColumn = "hazard_level";
+                            break;
+                        case "facilityType":
+                            dbColumn = "facility_type";
+                            break;
+                        case "activeFlag":
+                            dbColumn = "active_flag";
+                            break;
+                        default:
+                            // 常规驼峰命名转换为下划线命名
+                            dbColumn = key.replaceAll("([A-Z])", "_$1").toLowerCase();
+                            break;
+                    }
+                
+                sqlBuilder.append(" AND ").append(dbColumn).append(" = ?");
+                params.add(entry.getValue());
+            }
         }
         
         sqlBuilder.append(" ORDER BY activity_datetime DESC LIMIT ? OFFSET ?");

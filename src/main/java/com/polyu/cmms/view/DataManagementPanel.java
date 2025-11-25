@@ -1403,48 +1403,5 @@ public class DataManagementPanel extends JPanel {
         // 此方法在各个具体的子面板类中有实际实现
     }
     
-    // 通用数据管理面板（用于未完善的功能，如活动）
-    private class GenericDataPanel extends JPanel {
-        private JLabel pageInfoLabel;
-        private JButton prevButton, nextButton;
-        
-        public GenericDataPanel(String entityName) {
-            setLayout(new BorderLayout());
-            
-            JLabel label = new JLabel(entityName + "数据管理界面", JLabel.CENTER);
-            label.setFont(new Font("宋体", Font.PLAIN, 18));
-            
-            add(label, BorderLayout.CENTER);
-            
-            // 添加操作按钮面板
-            JPanel buttonPanel = new JPanel();
-            JButton addButton = new JButton("添加");
-            JButton updateButton = new JButton("更新");
-            JButton deleteButton = new JButton("删除");
-            JButton batchAddButton = new JButton("批量添加");
-            
-            buttonPanel.add(addButton);
-            buttonPanel.add(updateButton);
-            buttonPanel.add(deleteButton);
-            buttonPanel.add(batchAddButton);
-            
-            add(buttonPanel, BorderLayout.SOUTH);
-            
-            // 创建分页面板并初始化自己的分页组件
-            JPanel paginationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            prevButton = new JButton("上一页");
-            nextButton = new JButton("下一页");
-            pageInfoLabel = new JLabel("第 1 页，共 0 页，共 0 条记录");
-            
-            paginationPanel.add(prevButton);
-            paginationPanel.add(pageInfoLabel);
-            paginationPanel.add(nextButton);
-            
-            // 禁用分页按钮，因为通用面板没有实际数据
-            prevButton.setEnabled(false);
-            nextButton.setEnabled(false);
-            
-            add(paginationPanel, BorderLayout.AFTER_LAST_LINE);
-        }
-    }
+    // 通用数据管理面板类已被移除（未使用）
 }

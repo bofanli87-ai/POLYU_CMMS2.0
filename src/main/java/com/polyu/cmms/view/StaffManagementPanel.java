@@ -15,7 +15,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.awt.Font;
-import java.awt.event.*;
+
 // import java.sql.Connection;
 // import java.sql.PreparedStatement;
 // import java.sql.ResultSet;
@@ -47,42 +47,47 @@ public class StaffManagementPanel extends JPanel {
     
     // 员工列表面板
     private class StaffListPanel extends JPanel {
-        private JTable staffTable;
-        private DefaultTableModel tableModel;
-        private JTextField staffNumberField, firstNameField, lastNameField;
-        private JComboBox<String> genderComboBox, departmentComboBox, roleComboBox, activeFlagComboBox;
-        private JButton searchButton, resetButton, addButton, editButton, deleteButton;
-        private int currentPage = 1;
-        private int pageSize = 10;
-        private JLabel pageInfoLabel;
-        private JButton prevButton, nextButton;
+            private JTable staffTable;
+            private DefaultTableModel tableModel;
+            private JTextField staffNumberField, firstNameField, lastNameField;
+            private JComboBox<String> genderComboBox, departmentComboBox, roleComboBox, activeFlagComboBox;
+            private JButton searchButton, resetButton, addButton, deleteButton;
+            private int currentPage = 1;
+            private int pageSize = 10;
+            private JLabel pageInfoLabel;
+            private JButton prevButton, nextButton;
         
         public StaffListPanel() {
             setLayout(new BorderLayout());
             
             // 创建搜索面板
             JPanel searchPanel = createSearchPanel();
-            add(searchPanel, BorderLayout.NORTH);
             
             // 创建表格
             createTable();
             JScrollPane scrollPane = new JScrollPane(staffTable);
             add(scrollPane, BorderLayout.CENTER);
             
-            // 创建按钮面板
+            // 创建按钮面板，使用默认FlowLayout
             JPanel buttonPanel = new JPanel();
-            addButton = new JButton("添加");
-            editButton = new JButton("编辑");
-            deleteButton = new JButton("删除");
+            
+            // 创建按钮，使用系统默认样式
+            addButton = new JButton("添加员工");
+            deleteButton = new JButton("删除员工");
             
             buttonPanel.add(addButton);
-            buttonPanel.add(editButton);
             buttonPanel.add(deleteButton);
-            add(buttonPanel, BorderLayout.SOUTH);
             
-            // 创建分页面板
+            // 将按钮面板移到搜索面板下方，使其更明显
+            JPanel topPanel = new JPanel(new BorderLayout());
+            topPanel.add(searchPanel, BorderLayout.NORTH);
+            topPanel.add(buttonPanel, BorderLayout.SOUTH);
+            
+            add(topPanel, BorderLayout.NORTH);
+            
+            // 创建分页面板，并将其放在底部
             JPanel paginationPanel = createPaginationPanel();
-            add(paginationPanel, BorderLayout.AFTER_LAST_LINE);
+            add(paginationPanel, BorderLayout.SOUTH);
             
             // 添加事件监听器
             addEventListeners();
@@ -221,9 +226,6 @@ public class StaffManagementPanel extends JPanel {
             // 添加按钮
             addButton.addActionListener(e -> addStaff());
             
-            // 编辑按钮
-            editButton.addActionListener(e -> editStaff());
-            
             // 删除按钮
             deleteButton.addActionListener(e -> deleteStaff());
             
@@ -238,16 +240,6 @@ public class StaffManagementPanel extends JPanel {
             nextButton.addActionListener(e -> {
                 currentPage++;
                 loadStaffData();
-            });
-            
-            // 表格双击编辑
-            staffTable.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 2) {
-                        editStaff();
-                    }
-                }
             });
         }
         
@@ -484,193 +476,7 @@ public class StaffManagementPanel extends JPanel {
             dialog.setVisible(true);
         }
         
-        private void editStaff() {
-            int selectedRow = staffTable.getSelectedRow();
-            if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(this, "请选择要编辑的员工", "提示", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            
-            int staffId = (int) tableModel.getValueAt(selectedRow, 0);
-            StaffService staffService = StaffService.getInstance();
-            Map<String, Object> staff = null;
-            try {
-                staff = staffService.getStaffById(staffId);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "查询员工失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
-                return;
-            }
-            
-            if (staff == null) {
-                JOptionPane.showMessageDialog(this, "员工不存在", "错误", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            // 创建编辑对话框
-            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "编辑员工", true);
-            dialog.setSize(600, 500);
-            dialog.setLocationRelativeTo(this);
-            
-            // 创建表单面板
-            JPanel formPanel = new JPanel(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(5, 5, 5, 5);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            
-            // 员工信息表单字段
-            JTextField staffNumberInput = new JTextField(staff.get("staffNumber").toString(), 20);
-            JTextField firstNameInput = new JTextField(staff.get("firstName").toString(), 20);
-            JTextField lastNameInput = new JTextField(staff.get("lastName").toString(), 20);
-            JComboBox<String> genderInput = new JComboBox<>(new String[]{"M", "F"});
-            genderInput.setSelectedItem(staff.get("gender"));
-            JTextField dateOfBirthInput = new JTextField(staff.get("dateOfBirth").toString(), 20);
-            JTextField phoneInput = new JTextField(staff.getOrDefault("phone", "").toString(), 20);
-            JTextField emailInput = new JTextField(staff.get("email").toString(), 20);
-            JTextField hireDateInput = new JTextField(staff.get("hireDate").toString(), 20);
-            JComboBox<String> roleInput = new JComboBox<>(new String[]{"行政官", "中层经理", "基层员工"});
-            // 安全获取roleId，避免空指针异常
-            int roleId = 0;
-            Object roleIdObj = staff.get("roleId");
-            if (roleIdObj instanceof Number) {
-                roleId = ((Number) roleIdObj).intValue();
-            } else if (roleIdObj instanceof String) {
-                try {
-                    roleId = Integer.parseInt((String) roleIdObj);
-                } catch (NumberFormatException e) {
-                    roleId = 0;
-                }
-            }
-            if (roleId == 1) roleInput.setSelectedItem("行政官");
-            else if (roleId == 2) roleInput.setSelectedItem("中层经理");
-            else if (roleId == 3) roleInput.setSelectedItem("基层员工");
-            JTextField emergencyContactInput = new JTextField(staff.getOrDefault("emergencyContact", "").toString(), 20);
-            JTextField emergencyPhoneInput = new JTextField(staff.getOrDefault("emergencyPhone", "").toString(), 20);
-            JComboBox<String> activeFlagInput = new JComboBox<>(new String[]{"Y", "N"});
-            activeFlagInput.setSelectedItem(staff.get("activeFlag"));
-            
-            // 添加表单字段
-            int row = 0;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("员工编号:*"), gbc);
-            gbc.gridx = 1; formPanel.add(staffNumberInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("名字:*"), gbc);
-            gbc.gridx = 1; formPanel.add(firstNameInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("姓氏:*"), gbc);
-            gbc.gridx = 1; formPanel.add(lastNameInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("性别:*"), gbc);
-            gbc.gridx = 1; formPanel.add(genderInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("出生日期(yyyy-MM-dd):*"), gbc);
-            gbc.gridx = 1; formPanel.add(dateOfBirthInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("电话:*"), gbc);
-            gbc.gridx = 1; formPanel.add(phoneInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("邮箱:*"), gbc);
-            gbc.gridx = 1; formPanel.add(emailInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("入职日期(yyyy-MM-dd):*"), gbc);
-            gbc.gridx = 1; formPanel.add(hireDateInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("角色:*"), gbc);
-            gbc.gridx = 1; formPanel.add(roleInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("紧急联系人:"), gbc);
-            gbc.gridx = 1; formPanel.add(emergencyContactInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("紧急联系电话:"), gbc);
-            gbc.gridx = 1; formPanel.add(emergencyPhoneInput, gbc);
-            
-            row++;
-            gbc.gridx = 0; gbc.gridy = row; formPanel.add(new JLabel("状态:*"), gbc);
-            gbc.gridx = 1; formPanel.add(activeFlagInput, gbc);
-            
-            // 按钮面板
-            JPanel buttonPanel = new JPanel();
-            JButton saveButton = new JButton("保存");
-            JButton cancelButton = new JButton("取消");
-            buttonPanel.add(saveButton);
-            buttonPanel.add(cancelButton);
-            
-            // 添加面板到对话框
-            dialog.setLayout(new BorderLayout());
-            dialog.add(new JScrollPane(formPanel), BorderLayout.CENTER);
-            dialog.add(buttonPanel, BorderLayout.SOUTH);
-            
-            // 保存按钮事件
-            saveButton.addActionListener(e -> {
-                try {
-                    // 参数验证
-                    if (staffNumberInput.getText().trim().isEmpty()) {
-                        JOptionPane.showMessageDialog(dialog, "员工编号不能为空", "错误", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    
-                    // 日期格式化
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    Date dateOfBirth = sdf.parse(dateOfBirthInput.getText().trim());
-                    Date hireDate = sdf.parse(hireDateInput.getText().trim());
-                    
-                    // 角色转换
-                    String roleName = roleInput.getSelectedItem().toString();
-                    int roleIdValue = 0;
-                    if (roleName.equals("行政官")) roleIdValue = 1;
-                    else if (roleName.equals("中层经理")) roleIdValue = 2;
-                    else if (roleName.equals("基层员工")) roleIdValue = 3;
-                    
-                    // 更新员工
-                    boolean success = staffService.updateStaff(
-                        staffId,
-                        staffNumberInput.getText().trim(),
-                        firstNameInput.getText().trim(),
-                        lastNameInput.getText().trim(),
-                        genderInput.getSelectedItem().toString(),
-                        dateOfBirth,
-                        phoneInput.getText().trim(),
-                        emailInput.getText().trim(),
-                        hireDate,
-                        roleIdValue,
-                        emergencyContactInput.getText().trim(),
-                        emergencyPhoneInput.getText().trim(),
-                        activeFlagInput.getSelectedItem().toString()
-                    );
-                    
-                    if (success) {
-                        // 注意：根据需求移除了日志记录相关代码
-                        
-                        JOptionPane.showMessageDialog(dialog, "员工更新成功", "成功", JOptionPane.INFORMATION_MESSAGE);
-                        dialog.dispose();
-                        loadStaffData();
-                    } else {
-                        JOptionPane.showMessageDialog(dialog, "员工更新失败", "错误", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (ParseException pe) {
-                    JOptionPane.showMessageDialog(dialog, "日期格式不正确，请使用yyyy-MM-dd格式", "错误", JOptionPane.ERROR_MESSAGE);
-                } catch (NumberFormatException ne) {
-                    JOptionPane.showMessageDialog(dialog, "地址ID必须是数字", "错误", JOptionPane.ERROR_MESSAGE);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(dialog, "更新员工失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-                }
-            });
-            
-            // 取消按钮事件
-            cancelButton.addActionListener(e -> dialog.dispose());
-            
-            dialog.setVisible(true);
-        }
+
         
         private void deleteStaff() {
             int selectedRow = staffTable.getSelectedRow();

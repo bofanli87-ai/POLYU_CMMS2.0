@@ -8,19 +8,28 @@ public class Activity {
     private String title;
     private String description;
     private String status;
+    private String priority;
     private Date date;
-    private Date expectedDowntime;
+    private Integer expectedDowntime; // 存储分钟数
+    private Date actualCompletionDatetime;
     private int createdByStaffId;
     private Integer weatherId;
     private Integer buildingId;
     private Integer areaId;
     private String hazardLevel;
+    private String facilityType;
+    private Integer roomId;
+    private Integer levelId;
+    private Integer squareId;
+    private Integer gateId;
+    private Integer canteenId;
+    private String activeFlag;
     
     // 构造函数、getter和setter方法
     public Activity() {}
     
     public Activity(int activityId, String activityType, String title, String description, 
-                   String status, Date date, Date expectedDowntime, int createdByStaffId, 
+                   String status, Date date, Integer expectedDowntime, int createdByStaffId, 
                    Integer weatherId, Integer buildingId, Integer areaId, String hazardLevel) {
         this.activityId = activityId;
         this.activityType = activityType;
@@ -34,6 +43,10 @@ public class Activity {
         this.buildingId = buildingId;
         this.areaId = areaId;
         this.hazardLevel = hazardLevel;
+        // 设置默认值
+        this.priority = "medium";
+        this.facilityType = "none";
+        this.activeFlag = "Y";
     }
     
     // getter and setter methods
@@ -47,10 +60,14 @@ public class Activity {
     public void setDescription(String description) { this.description = description; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getPriority() { return priority; }
+    public void setPriority(String priority) { this.priority = priority; }
     public Date getDate() { return date; }
     public void setDate(Date date) { this.date = date; }
-    public Date getExpectedDowntime() { return expectedDowntime; }
-    public void setExpectedDowntime(Date expectedDowntime) { this.expectedDowntime = expectedDowntime; }
+    public Integer getExpectedDowntime() { return expectedDowntime; }
+    public void setExpectedDowntime(Integer expectedDowntime) { this.expectedDowntime = expectedDowntime; }
+    public Date getActualCompletionDatetime() { return actualCompletionDatetime; }
+    public void setActualCompletionDatetime(Date actualCompletionDatetime) { this.actualCompletionDatetime = actualCompletionDatetime; }
     public int getCreatedByStaffId() { return createdByStaffId; }
     public void setCreatedByStaffId(int createdByStaffId) { this.createdByStaffId = createdByStaffId; }
     public Integer getWeatherId() { return weatherId; }
@@ -61,4 +78,18 @@ public class Activity {
     public void setAreaId(Integer areaId) { this.areaId = areaId; }
     public String getHazardLevel() { return hazardLevel; }
     public void setHazardLevel(String hazardLevel) { this.hazardLevel = hazardLevel; }
+    public String getFacilityType() { return facilityType; }
+    public void setFacilityType(String facilityType) { this.facilityType = facilityType; }
+    public Integer getRoomId() { return roomId; }
+    public void setRoomId(Integer roomId) { this.roomId = roomId; }
+    public Integer getLevelId() { return levelId; }
+    public void setLevelId(Integer levelId) { this.levelId = levelId; }
+    public Integer getSquareId() { return squareId; }
+    public void setSquareId(Integer squareId) { this.squareId = squareId; }
+    public Integer getGateId() { return gateId; }
+    public void setGateId(Integer gateId) { this.gateId = gateId; }
+    public Integer getCanteenId() { return canteenId; }
+    public void setCanteenId(Integer canteenId) { this.canteenId = canteenId; }
+    public String getActiveFlag() { return activeFlag; }
+    public void setActiveFlag(String activeFlag) { this.activeFlag = activeFlag; }
 }
