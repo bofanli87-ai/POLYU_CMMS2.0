@@ -139,7 +139,7 @@ public class CompanyService extends BaseService {
      * @throws SQLException SQL异常
      */
     public List<Map<String, Object>> queryCompanies(Map<String, Object> conditions) throws SQLException {
-        StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM company WHERE 1=1");
+        StringBuilder sqlBuilder = new StringBuilder("SELECT contractor_id, contractor_code, name, contact_name, contract_quote, email, phone, address_id, expertise, tax_id, bank_account, active_flag FROM company WHERE 1=1");
         List<Object> params = new ArrayList<>();
         
         if (conditions != null) {
@@ -153,7 +153,7 @@ public class CompanyService extends BaseService {
         
         return executeQuery(sqlBuilder.toString(), params.toArray());
     }
-    
+
     /**
      * 分页查询外包公司
      * @param page 页码
@@ -169,7 +169,7 @@ public class CompanyService extends BaseService {
         if (page < 1) page = 1;
         if (pageSize < 1 || pageSize > 100) pageSize = 30;
         
-        StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM company WHERE 1=1");
+        StringBuilder sqlBuilder = new StringBuilder("SELECT contractor_id, contractor_code, name, contact_name, contract_quote, email, phone, address_id, expertise, tax_id, bank_account, active_flag FROM company WHERE 1=1");
         List<Object> params = new ArrayList<>();
         
         // 添加过滤条件
@@ -199,7 +199,7 @@ public class CompanyService extends BaseService {
         // 获取数据
         List<Map<String, Object>> data = executeQuery(sqlBuilder.toString(), params.toArray());
         
-        // 获取总数
+        // 获取总数 - 简化获取方式
         StringBuilder countSqlBuilder = new StringBuilder("SELECT COUNT(*) FROM company WHERE 1=1");
         List<Object> countParams = new ArrayList<>();
         if (conditions != null) {
@@ -213,27 +213,19 @@ public class CompanyService extends BaseService {
         List<Map<String, Object>> countResult = executeQuery(countSqlBuilder.toString(), countParams.toArray());
         int total = 0;
         
-        // 安全获取总记录数，避免空指针异常
-        if (countResult != null && !countResult.isEmpty()) {
-            Map<String, Object> firstRow = countResult.get(0);
-            if (firstRow != null) {
-                Object countObj = firstRow.get("count");
-                if (countObj instanceof Number) {
-                    total = ((Number) countObj).intValue();
-                } else if (countObj != null) {
-                    try {
-                        total = Integer.parseInt(countObj.toString());
-                    } catch (NumberFormatException e) {
-                        total = 0;
-                    }
-                }
+        // 直接使用第一列获取总数
+        if (countResult != null && !countResult.isEmpty() && countResult.get(0) != null && !countResult.get(0).isEmpty()) {
+            // 获取结果集第一列的值
+            Object firstValue = countResult.get(0).values().iterator().next();
+            if (firstValue instanceof Number) {
+                total = ((Number) firstValue).intValue();
             }
         }
         
         Map<String, Object> result = new HashMap<>();
         result.put("data", data);
-        result.put("total", total);
-        result.put("page", page);
+        result.put("total", total); // 使用"total"键名以保持与测试类一致
+        result.put("currentPage", page);
         result.put("pageSize", pageSize);
         // 安全计算总页数，避免类型转换问题
         int totalPages = 0;
@@ -256,7 +248,7 @@ public class CompanyService extends BaseService {
      * @throws SQLException SQL异常
      */
     public Map<String, Object> getCompanyById(int contractorId) throws SQLException {
-        String sql = "SELECT * FROM company WHERE contractor_id = ?";
+        String sql = "SELECT contractor_id, contractor_code, name, contact_name, contract_quote, email, phone, address_id, expertise, tax_id, bank_account, active_flag FROM company WHERE contractor_id = ?";
         List<Map<String, Object>> results = executeQuery(sql, contractorId);
         return results.isEmpty() ? null : results.get(0);
     }
@@ -267,7 +259,7 @@ public class CompanyService extends BaseService {
      * @throws SQLException SQL异常
      */
     public List<Map<String, Object>> getAllActiveCompanies() throws SQLException {
-        String sql = "SELECT * FROM company WHERE active_flag = 'Y' ORDER BY name";
+        String sql = "SELECT contractor_id, contractor_code, name, contact_name, contract_quote, email, phone, address_id, expertise, tax_id, bank_account, active_flag FROM company WHERE active_flag = 'Y' ORDER BY name";
         return executeQuery(sql);
     }
     
@@ -278,7 +270,7 @@ public class CompanyService extends BaseService {
      * @throws SQLException SQL异常
      */
     public List<Map<String, Object>> getCompaniesByExpertise(String expertise) throws SQLException {
-        String sql = "SELECT * FROM company WHERE expertise LIKE ? AND active_flag = 'Y' ORDER BY name";
+        String sql = "SELECT contractor_id, contractor_code, name, contact_name, contract_quote, email, phone, address_id, expertise, tax_id, bank_account, active_flag FROM company WHERE expertise LIKE ? AND active_flag = 'Y' ORDER BY name";
         return executeQuery(sql, "%" + expertise + "%");
     }
     

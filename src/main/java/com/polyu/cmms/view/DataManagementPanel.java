@@ -33,21 +33,21 @@ public class DataManagementPanel extends JPanel {
         // 创建导航按钮
         JButton buildingButton = new JButton("建筑物信息");
         JButton roomButton = new JButton("房间信息");
-        JButton activityButton = new JButton("活动信息");
+        // JButton activityButton = new JButton("活动信息");
         JButton companyButton = new JButton("外包公司");
         JButton chemicalButton = new JButton("化学物质");
         
         // 添加按钮监听器
         buildingButton.addActionListener(new NavigationListener("building"));
         roomButton.addActionListener(new NavigationListener("room"));
-        activityButton.addActionListener(new NavigationListener("activity"));
+        // activityButton.addActionListener(new NavigationListener("activity"));
         companyButton.addActionListener(new NavigationListener("company"));
         chemicalButton.addActionListener(new NavigationListener("chemical"));
         
         // 添加按钮到导航面板
         navigationPanel.add(buildingButton);
         navigationPanel.add(roomButton);
-        navigationPanel.add(activityButton);
+        // navigationPanel.add(activityButton);
         navigationPanel.add(companyButton);
         navigationPanel.add(chemicalButton);
         
@@ -58,7 +58,7 @@ public class DataManagementPanel extends JPanel {
         // 添加各个数据实体的管理面板
         contentPanel.add(new BuildingDataPanel(), "building");
         contentPanel.add(new RoomDataPanel(), "room");
-        contentPanel.add(new GenericDataPanel("活动"), "activity"); // 保留通用面板，等待活动部分完善
+        // contentPanel.add(new GenericDataPanel("活动"), "activity"); // 保留通用面板，等待活动部分完善
         contentPanel.add(new CompanyDataPanel(), "company");
         contentPanel.add(new ChemicalDataPanel(), "chemical");
         
@@ -87,6 +87,8 @@ public class DataManagementPanel extends JPanel {
         private int currentPage = 1;
         private int pageSize = 10;
         private BuildingService buildingService;
+        private JButton prevButton, nextButton;
+        private JLabel pageInfoLabel;
         
         public BuildingDataPanel() {
             setLayout(new BorderLayout());
@@ -115,15 +117,34 @@ public class DataManagementPanel extends JPanel {
             add(buttonPanel, BorderLayout.SOUTH);
             
             // 创建分页面板
+            // 创建分页面板并保存自己的按钮引用
             JPanel paginationPanel = createPaginationPanel();
             add(paginationPanel, BorderLayout.AFTER_LAST_LINE);
+            
+            // 获取分页面板中的按钮引用
+            for (Component comp : paginationPanel.getComponents()) {
+                if (comp instanceof JButton) {
+                    JButton btn = (JButton) comp;
+                    if ("上一页".equals(btn.getText())) {
+                        prevButton = btn;
+                    } else if ("下一页".equals(btn.getText())) {
+                        nextButton = btn;
+                    }
+                } else if (comp instanceof JLabel) {
+                    pageInfoLabel = (JLabel) comp;
+                }
+            }
             
             // 添加事件监听器
             addButton.addActionListener(e -> addBuilding());
             updateButton.addActionListener(e -> updateBuilding());
             deleteButton.addActionListener(e -> deleteBuilding());
-            prevButton.addActionListener(e -> goToPreviousPage());
-            nextButton.addActionListener(e -> goToNextPage());
+            if (prevButton != null) {
+                prevButton.addActionListener(e -> goToPreviousPage());
+            }
+            if (nextButton != null) {
+                nextButton.addActionListener(e -> goToNextPage());
+            }
             
             // 加载数据
             loadBuildingData();
@@ -154,10 +175,16 @@ public class DataManagementPanel extends JPanel {
                     tableModel.addRow(rowData);
                 }
                 
-                // 更新分页信息
-                pageInfoLabel.setText("第 " + currentPage + " 页，共 " + totalPages + " 页，共 " + total + " 条记录");
-                prevButton.setEnabled(currentPage > 1);
-                nextButton.setEnabled(currentPage < totalPages);
+                // 更新分页信息 - 使用自己面板的组件
+                if (this.pageInfoLabel != null) {
+                    this.pageInfoLabel.setText("第 " + currentPage + " 页，共 " + totalPages + " 页，共 " + total + " 条记录");
+                }
+                if (this.prevButton != null) {
+                    this.prevButton.setEnabled(currentPage > 1);
+                }
+                if (this.nextButton != null) {
+                    this.nextButton.setEnabled(currentPage < totalPages);
+                }
                 
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "加载建筑物数据失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
@@ -342,6 +369,8 @@ public class DataManagementPanel extends JPanel {
         private int currentPage = 1;
         private int pageSize = 10;
         private RoomService roomService;
+        private JButton prevButton, nextButton;
+        private JLabel pageInfoLabel;
         
         public RoomDataPanel() {
             setLayout(new BorderLayout());
@@ -370,15 +399,34 @@ public class DataManagementPanel extends JPanel {
             add(buttonPanel, BorderLayout.SOUTH);
             
             // 创建分页面板
+            // 创建分页面板并保存自己的按钮引用
             JPanel paginationPanel = createPaginationPanel();
             add(paginationPanel, BorderLayout.AFTER_LAST_LINE);
+            
+            // 获取分页面板中的按钮引用
+            for (Component comp : paginationPanel.getComponents()) {
+                if (comp instanceof JButton) {
+                    JButton btn = (JButton) comp;
+                    if ("上一页".equals(btn.getText())) {
+                        prevButton = btn;
+                    } else if ("下一页".equals(btn.getText())) {
+                        nextButton = btn;
+                    }
+                } else if (comp instanceof JLabel) {
+                    pageInfoLabel = (JLabel) comp;
+                }
+            }
             
             // 添加事件监听器
             addButton.addActionListener(e -> addRoom());
             updateButton.addActionListener(e -> updateRoom());
             deleteButton.addActionListener(e -> deleteRoom());
-            prevButton.addActionListener(e -> goToPreviousPage());
-            nextButton.addActionListener(e -> goToNextPage());
+            if (prevButton != null) {
+                prevButton.addActionListener(e -> goToPreviousPage());
+            }
+            if (nextButton != null) {
+                nextButton.addActionListener(e -> goToNextPage());
+            }
             
             // 加载数据
             loadRoomData();
@@ -409,10 +457,16 @@ public class DataManagementPanel extends JPanel {
                     tableModel.addRow(rowData);
                 }
                 
-                // 更新分页信息
-                pageInfoLabel.setText("第 " + currentPage + " 页，共 " + totalPages + " 页，共 " + total + " 条记录");
-                prevButton.setEnabled(currentPage > 1);
-                nextButton.setEnabled(currentPage < totalPages);
+                // 更新分页信息 - 使用自己面板的组件
+                if (this.pageInfoLabel != null) {
+                    this.pageInfoLabel.setText("第 " + currentPage + " 页，共 " + totalPages + " 页，共 " + total + " 条记录");
+                }
+                if (this.prevButton != null) {
+                    this.prevButton.setEnabled(currentPage > 1);
+                }
+                if (this.nextButton != null) {
+                    this.nextButton.setEnabled(currentPage < totalPages);
+                }
                 
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "加载房间数据失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
@@ -589,6 +643,8 @@ public class DataManagementPanel extends JPanel {
         private int currentPage = 1;
         private int pageSize = 10;
         private CompanyService companyService;
+        private JButton prevButton, nextButton;
+        private JLabel pageInfoLabel;
         
         public CompanyDataPanel() {
             setLayout(new BorderLayout());
@@ -617,15 +673,34 @@ public class DataManagementPanel extends JPanel {
             add(buttonPanel, BorderLayout.SOUTH);
             
             // 创建分页面板
+            // 创建分页面板并保存自己的按钮引用
             JPanel paginationPanel = createPaginationPanel();
             add(paginationPanel, BorderLayout.AFTER_LAST_LINE);
+            
+            // 获取分页面板中的按钮引用
+            for (Component comp : paginationPanel.getComponents()) {
+                if (comp instanceof JButton) {
+                    JButton btn = (JButton) comp;
+                    if ("上一页".equals(btn.getText())) {
+                        prevButton = btn;
+                    } else if ("下一页".equals(btn.getText())) {
+                        nextButton = btn;
+                    }
+                } else if (comp instanceof JLabel) {
+                    pageInfoLabel = (JLabel) comp;
+                }
+            }
             
             // 添加事件监听器
             addButton.addActionListener(e -> addCompany());
             updateButton.addActionListener(e -> updateCompany());
             deleteButton.addActionListener(e -> deleteCompany());
-            prevButton.addActionListener(e -> goToPreviousPage());
-            nextButton.addActionListener(e -> goToNextPage());
+            if (prevButton != null) {
+                prevButton.addActionListener(e -> goToPreviousPage());
+            }
+            if (nextButton != null) {
+                nextButton.addActionListener(e -> goToNextPage());
+            }
             
             // 加载数据
             loadCompanyData();
@@ -645,26 +720,32 @@ public class DataManagementPanel extends JPanel {
                 // 填充表格
                 for (Map<String, Object> company : companies) {
                     Object[] rowData = {
-                        company.get("contractor_id"),
-                        company.get("contractor_code"),
+                        company.get("contractorId"),
+                        company.get("contractorCode"),
                         company.get("name"),
-                        company.get("contact_name"),
-                        company.get("contract_quote"),
+                        company.get("contactName"),
+                        company.get("contractQuote"),
                         company.get("email"),
                         company.get("phone"),
-                        company.get("address_id"),
+                        company.get("addressId"),
                         company.get("expertise"),
-                        company.get("tax_id"),
-                        company.get("bank_account"),
-                        company.get("active_flag")
+                        company.get("taxId"),
+                        company.get("bankAccount"),
+                        company.get("activeFlag")
                     };
                     tableModel.addRow(rowData);
                 }
                 
-                // 更新分页信息
-                pageInfoLabel.setText("第 " + currentPage + " 页，共 " + totalPages + " 页，共 " + total + " 条记录");
-                prevButton.setEnabled(currentPage > 1);
-                nextButton.setEnabled(currentPage < totalPages);
+                // 更新分页信息 - 使用自己面板的组件
+                if (this.pageInfoLabel != null) {
+                    this.pageInfoLabel.setText("第 " + currentPage + " 页，共 " + totalPages + " 页，共 " + total + " 条记录");
+                }
+                if (this.prevButton != null) {
+                    this.prevButton.setEnabled(currentPage > 1);
+                }
+                if (this.nextButton != null) {
+                    this.nextButton.setEnabled(currentPage < totalPages);
+                }
                 
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "加载公司数据失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
@@ -886,6 +967,29 @@ public class DataManagementPanel extends JPanel {
                 }
             }
         }
+        
+        // 分页导航方法实现
+        private void goToPreviousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadCompanyData();
+            }
+        }
+        
+        private void goToNextPage() {
+            // 重新获取数据以检查是否有更多页面
+            try {
+                Map<String, Object> result = companyService.getCompaniesByPage(currentPage, pageSize, null, null, null);
+                int totalPages = getIntValue(result.get("totalPages"), 0);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    loadCompanyData();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "获取分页信息失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        }
     }
     
     // 化学物质数据管理面板
@@ -895,6 +999,8 @@ public class DataManagementPanel extends JPanel {
         private int currentPage = 1;
         private int pageSize = 10;
         private ChemicalService chemicalService;
+        private JButton prevButton, nextButton;
+        private JLabel pageInfoLabel;
         
         public ChemicalDataPanel() {
             setLayout(new BorderLayout());
@@ -923,15 +1029,34 @@ public class DataManagementPanel extends JPanel {
             add(buttonPanel, BorderLayout.SOUTH);
             
             // 创建分页面板
+            // 创建分页面板并保存自己的按钮引用
             JPanel paginationPanel = createPaginationPanel();
             add(paginationPanel, BorderLayout.AFTER_LAST_LINE);
+            
+            // 获取分页面板中的按钮引用
+            for (Component comp : paginationPanel.getComponents()) {
+                if (comp instanceof JButton) {
+                    JButton btn = (JButton) comp;
+                    if ("上一页".equals(btn.getText())) {
+                        prevButton = btn;
+                    } else if ("下一页".equals(btn.getText())) {
+                        nextButton = btn;
+                    }
+                } else if (comp instanceof JLabel) {
+                    pageInfoLabel = (JLabel) comp;
+                }
+            }
             
             // 添加事件监听器
             addButton.addActionListener(e -> addChemical());
             updateButton.addActionListener(e -> updateChemical());
             deleteButton.addActionListener(e -> deleteChemical());
-            prevButton.addActionListener(e -> goToPreviousPage());
-            nextButton.addActionListener(e -> goToNextPage());
+            if (prevButton != null) {
+                prevButton.addActionListener(e -> goToPreviousPage());
+            }
+            if (nextButton != null) {
+                nextButton.addActionListener(e -> goToNextPage());
+            }
             
             // 加载数据
             loadChemicalData();
@@ -951,23 +1076,29 @@ public class DataManagementPanel extends JPanel {
                 // 填充表格
                 for (Map<String, Object> chemical : chemicals) {
                     Object[] rowData = {
-                        chemical.get("chemical_id"),
-                        chemical.get("product_code"),
+                        chemical.get("chemicalId"),
+                        chemical.get("productCode"),
                         chemical.get("name"),
                         chemical.get("type"),
                         chemical.get("manufacturer"),
-                        chemical.get("msds_url"),
-                        chemical.get("hazard_category"),
-                        chemical.get("storage_requirements"),
-                        chemical.get("active_flag")
+                        chemical.get("msdsUrl"),
+                        chemical.get("hazardCategory"),
+                        chemical.get("storageRequirements"),
+                        chemical.get("activeFlag")
                     };
                     tableModel.addRow(rowData);
                 }
                 
-                // 更新分页信息
-                pageInfoLabel.setText("第 " + currentPage + " 页，共 " + totalPages + " 页，共 " + total + " 条记录");
-                prevButton.setEnabled(currentPage > 1);
-                nextButton.setEnabled(currentPage < totalPages);
+                // 更新分页信息 - 使用自己面板的组件
+                if (this.pageInfoLabel != null) {
+                    this.pageInfoLabel.setText("第 " + currentPage + " 页，共 " + totalPages + " 页，共 " + total + " 条记录");
+                }
+                if (this.prevButton != null) {
+                    this.prevButton.setEnabled(currentPage > 1);
+                }
+                if (this.nextButton != null) {
+                    this.nextButton.setEnabled(currentPage < totalPages);
+                }
                 
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "加载化学物质数据失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
