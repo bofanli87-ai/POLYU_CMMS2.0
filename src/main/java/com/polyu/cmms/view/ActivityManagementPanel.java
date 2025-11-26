@@ -38,7 +38,7 @@ public class ActivityManagementPanel extends JPanel {
     
     public ActivityManagementPanel() {
         authService = AuthService.getInstance();
-        activityService = new ActivityService();
+        activityService = ActivityService.getInstance();
         setLayout(new BorderLayout());
         
         try {
