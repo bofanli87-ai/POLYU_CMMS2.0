@@ -120,4 +120,68 @@ public class HtmlLogger {
     public static void logWarning(int userId, String role, String operationType, String description) {
         log(userId, role, operationType, description, LogLevel.WARNING, "127.0.0.1");
     }
+
+    // ==================== 新增：通用系统日志方法 ====================
+
+    /**
+     * 记录系统错误日志（无需用户上下文）
+     * @param source 日志来源（通常是类名或方法名）
+     * @param message 日志消息
+     * @param throwable 异常对象（可为null）
+     */
+    public static void error(String source, String message, Throwable throwable) {
+        logSystem(source, message, LogLevel.ERROR, throwable);
+    }
+
+    /**
+     * 记录系统警告日志（无需用户上下文）
+     * @param source 日志来源
+     * @param message 日志消息
+     * @param throwable 异常对象（可为null）
+     */
+    public static void warn(String source, String message, Throwable throwable) {
+        logSystem(source, message, LogLevel.WARNING, throwable);
+    }
+
+    /**
+     * 记录系统信息日志（无需用户上下文）
+     * @param source 日志来源
+     * @param message 日志消息
+     */
+    public static void info(String source, String message) {
+        logSystem(source, message, LogLevel.INFO, null);
+    }
+
+    /**
+     * 系统日志核心方法
+     */
+    private static void logSystem(String source, String message, LogLevel level, Throwable throwable) {
+        // 对于系统日志，填充通用信息
+        int dummyUserId = 0; // 用0表示无特定用户
+        String dummyRole = "SYSTEM"; // 角色标记为系统
+        String operationType = source; // 将来源作为操作类型
+
+        // 如果有异常，将异常堆栈信息附加到消息中
+        if (throwable != null) {
+            message += "。详细信息：" + getStackTraceAsString(throwable);
+        }
+
+        // 调用现有的log方法
+        log(dummyUserId, dummyRole, operationType, message, level, "SYSTEM");
+    }
+
+    /**
+     * 将异常堆栈信息转换为字符串
+     */
+    private static String getStackTraceAsString(Throwable throwable) {
+        if (throwable == null) {
+            return "";
+        }
+        java.io.StringWriter sw = new java.io.StringWriter();
+        java.io.PrintWriter pw = new java.io.PrintWriter(sw);
+        throwable.printStackTrace(pw);
+        pw.close();
+        return sw.toString();
+    }
+
 }
