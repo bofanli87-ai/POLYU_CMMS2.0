@@ -29,7 +29,7 @@ public class ActivityServiceTest {
         System.out.println("开始测试活动数据获取...");
         
         // 获取ActivityService实例
-        ActivityService activityService = new ActivityService();
+        ActivityService activityService = ActivityService.getInstance();
         
         try {
             // 测试1: 无条件查询所有活动
@@ -154,7 +154,7 @@ public class ActivityServiceTest {
     public static void testAddActivity() {
         System.out.println("\n开始测试添加活动功能...");
         
-        ActivityService activityService = new ActivityService();
+        ActivityService activityService = ActivityService.getInstance();
         
         try {
             // 创建测试活动对象
@@ -203,7 +203,7 @@ public class ActivityServiceTest {
     public static void testExceptionHandling() {
         System.out.println("\n开始测试异常情况处理...");
         
-        ActivityService activityService = new ActivityService();
+        ActivityService activityService = ActivityService.getInstance();
         
         // 测试无效的分页参数
         System.out.println("\n测试无效的分页参数（页码为负数）");

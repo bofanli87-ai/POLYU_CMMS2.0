@@ -12,7 +12,23 @@ import java.util.Map;
  * 活动服务类，提供活动相关的数据访问功能
  */
 public class ActivityService extends BaseService {
-    
+
+    // 1. 私有静态成员变量：存储类的唯一实例（单例模式核心）
+    private static ActivityService instance;
+
+    // 2. 私有构造函数：防止外部通过 new 创建实例
+    private ActivityService() {
+        // 可添加初始化逻辑（如加载配置、初始化连接池等）
+    }
+
+    // 3. 公共静态方法：提供全局唯一的实例访问点
+    public static synchronized ActivityService getInstance() {
+        if (instance == null) { // 懒汉式初始化：首次调用时才创建实例
+            instance = new ActivityService();
+        }
+        return instance;
+    }
+
     /**
      * 添加活动
      * @param activity 活动对象
@@ -33,7 +49,7 @@ public class ActivityService extends BaseService {
         
         return result > 0;
     }
-    
+
     /**
      * 更新活动状态
      * @param activityId 活动ID
@@ -44,7 +60,7 @@ public class ActivityService extends BaseService {
     public boolean updateActivityStatus(int activityId, String status) throws SQLException {
         String sql;
         List<Object> params = new ArrayList<>();
-        
+
         if ("completed".equals(status)) {
             sql = "UPDATE activity SET status = ?, actual_completion_datetime = NOW() WHERE activity_id = ?";
             params.add(status);
@@ -54,11 +70,11 @@ public class ActivityService extends BaseService {
             params.add(status);
             params.add(activityId);
         }
-        
+
         int result = executeUpdate(sql, params.toArray());
         return result > 0;
     }
-    
+
     /**
      * 按条件查询活动
      * @param conditions 查询条件
@@ -68,7 +84,7 @@ public class ActivityService extends BaseService {
     public List<Map<String, Object>> queryActivities(Map<String, Object> conditions) throws SQLException {
         StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM activity WHERE active_flag = 'Y'");
         List<Object> params = new java.util.ArrayList<>();
-        
+
         for (Map.Entry<String, Object> entry : conditions.entrySet()) {
             // 特殊字段映射
             String key = entry.getKey();
@@ -136,18 +152,18 @@ public class ActivityService extends BaseService {
             sqlBuilder.append(" AND ").append(dbColumn).append(" = ?");
             params.add(entry.getValue());
         }
-        
+
         sqlBuilder.append(" ORDER BY activity_datetime DESC");
-        
+
         return executeQuery(sqlBuilder.toString(), params.toArray());
     }
-    
+
     /**
      * 分页查询活动
-     * @param page 页码
-     * @param pageSize 每页大小
-     * @param conditions 查询条件
-     * @return 分页查询结果
+     * @param page 页码（从1开始）
+     * @param pageSize 每页显示数量
+     * @param conditions 查询条件（可为null）
+     * @return 分页查询结果（活动列表）
      * @throws SQLException SQL异常
      */
     public List<Map<String, Object>> queryActivitiesByPage(int page, int pageSize, Map<String, Object> conditions) throws SQLException {
@@ -224,54 +240,63 @@ public class ActivityService extends BaseService {
                 params.add(entry.getValue());
             }
         }
-        
+
+        // 分页逻辑（LIMIT 每页数量 OFFSET 起始索引）
+        int offset = (page - 1) * pageSize;
         sqlBuilder.append(" ORDER BY activity_datetime DESC LIMIT ? OFFSET ?");
         params.add(pageSize);
-        params.add((page - 1) * pageSize);
-        
+        params.add(offset);
+
         return executeQuery(sqlBuilder.toString(), params.toArray());
     }
-    
+
     /**
      * 按时间段和建筑物查询清洁活动
-     * @param startTime 开始时间
-     * @param endTime 结束时间
-     * @param buildingId 建筑物ID
-     * @param activityTypes 活动类型列表
-     * @return 查询结果
+     * @param startTime 开始时间（可为null）
+     * @param endTime 结束时间（可为null）
+     * @param buildingId 建筑物ID（可为null）
+     * @param activityTypes 活动类型列表（如 ["cleaning", "deep_cleaning"]）
+     * @return 清洁活动列表
      * @throws SQLException SQL异常
      */
     public List<Map<String, Object>> queryCleaningActivities(Date startTime, Date endTime, Integer buildingId, List<String> activityTypes) throws SQLException {
-        StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM activity WHERE active_flag = 'Y' AND activity_type IN (" + 
-            String.join(",", java.util.Collections.nCopies(activityTypes.size(), "?")) + ")");
-        
+        if (activityTypes == null || activityTypes.isEmpty()) {
+            throw new IllegalArgumentException("活动类型列表不能为空");
+        }
+
+        StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM activity WHERE active_flag = 'Y' AND activity_type IN (");
+        // 动态生成 IN 条件的占位符（如 ?, ?, ?）
+        sqlBuilder.append(String.join(",", java.util.Collections.nCopies(activityTypes.size(), "?")));
+        sqlBuilder.append(")");
+
         List<Object> params = new java.util.ArrayList<>(activityTypes);
-        
+
+        // 处理时间段条件
         if (startTime != null) {
             sqlBuilder.append(" AND activity_datetime >= ?");
             params.add(startTime);
         }
-        
         if (endTime != null) {
             sqlBuilder.append(" AND activity_datetime <= ?");
             params.add(endTime);
         }
-        
+
+        // 处理建筑物ID条件
         if (buildingId != null) {
             sqlBuilder.append(" AND building_id = ?");
             params.add(buildingId);
         }
-        
+
         sqlBuilder.append(" ORDER BY activity_datetime");
-        
+
         return executeQuery(sqlBuilder.toString(), params.toArray());
     }
-    
+
     /**
      * 统计各区域各类活动的工人参与数量
-     * @param startTime 开始时间
-     * @param endTime 结束时间
-     * @return 统计结果
+     * @param startTime 开始时间（可为null）
+     * @param endTime 结束时间（可为null）
+     * @return 统计结果（包含 activity_type, area_name, worker_count）
      * @throws SQLException SQL异常
      */
     public List<Map<String, Object>> countWorkersByAreaAndActivity(Date startTime, Date endTime) throws SQLException {
@@ -307,21 +332,21 @@ public class ActivityService extends BaseService {
             WHERE 
                 a.active_flag = 'Y' AND a.status = 'completed'
         """;
-        
+
         List<Object> params = new java.util.ArrayList<>();
-        
+
+        // 处理时间段条件
         if (startTime != null) {
             sql += " AND a.activity_datetime >= ?";
             params.add(startTime);
         }
-        
         if (endTime != null) {
             sql += " AND a.activity_datetime <= ?";
             params.add(endTime);
         }
-        
+
         sql += " GROUP BY a.activity_type, area_name ORDER BY worker_count DESC";
-        
+
         return executeQuery(sql, params.toArray());
     }
 }
