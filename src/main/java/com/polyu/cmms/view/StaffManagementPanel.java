@@ -1,11 +1,6 @@
 package com.polyu.cmms.view;
-
-// import com.polyu.cmms.model.Staff;
 import com.polyu.cmms.service.StaffService;
 import com.polyu.cmms.service.SuperviseService;
-// import com.polyu.cmms.util.DatabaseUtil;
-
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -15,11 +10,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.awt.Font;
-
-// import java.sql.Connection;
-// import java.sql.PreparedStatement;
-// import java.sql.ResultSet;
-// import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1088,13 +1078,7 @@ public class StaffManagementPanel extends JPanel {
             }
         }
         
-        // // 兼容旧方法调用的重载版本（不建议使用，会导致重复节点）
-        // private void buildSubordinateTree(DefaultMutableTreeNode parentNode, int supervisorStaffId) throws SQLException {
-        //     // 创建一个临时的Set，但这不能完全解决重复问题，主要用于兼容性
-        //     Set<Integer> tempAddedStaffIds = new HashSet<>();
-        //     buildSubordinateTree(parentNode, supervisorStaffId, 1, tempAddedStaffIds);
-        // }
-        
+       
         private void expandAllNodes(JTree tree, int startingIndex, int rowCount) {
             for (int i = startingIndex; i < rowCount; ++i) {
                 tree.expandRow(i);
