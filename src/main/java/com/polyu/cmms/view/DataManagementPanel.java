@@ -1,12 +1,8 @@
 package com.polyu.cmms.view;
-
 import com.polyu.cmms.service.BuildingService;
 import com.polyu.cmms.service.RoomService;
 import com.polyu.cmms.service.CompanyService;
 import com.polyu.cmms.service.ChemicalService;
-// import com.polyu.cmms.service.ActivityService;
-// import com.polyu.cmms.service.AuthService;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -28,26 +24,23 @@ public class DataManagementPanel extends JPanel {
         
         // 左侧导航面板
         JPanel navigationPanel = new JPanel(new GridLayout(0, 1, 5, 5));
-        navigationPanel.setBorder(BorderFactory.createTitledBorder("数据实体"));
+        navigationPanel.setBorder(BorderFactory.createTitledBorder("Data"));
         
         // 创建导航按钮
-        JButton buildingButton = new JButton("建筑物信息");
-        JButton roomButton = new JButton("房间信息");
-        // JButton activityButton = new JButton("活动信息");
-        JButton companyButton = new JButton("外包公司");
-        JButton chemicalButton = new JButton("化学物质");
+        JButton buildingButton = new JButton("Building");
+        JButton roomButton = new JButton("Room");
+        JButton companyButton = new JButton("Company");
+        JButton chemicalButton = new JButton("Chemical");
         
         // 添加按钮监听器
         buildingButton.addActionListener(new NavigationListener("building"));
         roomButton.addActionListener(new NavigationListener("room"));
-        // activityButton.addActionListener(new NavigationListener("activity"));
         companyButton.addActionListener(new NavigationListener("company"));
         chemicalButton.addActionListener(new NavigationListener("chemical"));
         
         // 添加按钮到导航面板
         navigationPanel.add(buildingButton);
         navigationPanel.add(roomButton);
-        // navigationPanel.add(activityButton);
         navigationPanel.add(companyButton);
         navigationPanel.add(chemicalButton);
         
@@ -58,7 +51,6 @@ public class DataManagementPanel extends JPanel {
         // 添加各个数据实体的管理面板
         contentPanel.add(new BuildingDataPanel(), "building");
         contentPanel.add(new RoomDataPanel(), "room");
-        // contentPanel.add(new GenericDataPanel("活动"), "activity"); // 保留通用面板，等待活动部分完善
         contentPanel.add(new CompanyDataPanel(), "company");
         contentPanel.add(new ChemicalDataPanel(), "chemical");
         
@@ -99,7 +91,7 @@ public class DataManagementPanel extends JPanel {
             add(searchPanel, BorderLayout.NORTH);
             
             // 创建表格
-            String[] columnNames = {"ID", "建筑物代码", "建造日期", "地址ID", "楼层数", "负责人ID", "状态"};
+            String[] columnNames = {"ID", "Building Code", "Build Date", "Address ID", "Floor Number", "Manager ID", "Status"}; 
             tableModel = new DefaultTableModel(columnNames, 0);
             table = new JTable(tableModel);
             JScrollPane scrollPane = new JScrollPane(table);
@@ -111,9 +103,9 @@ public class DataManagementPanel extends JPanel {
             
             // 创建按钮面板
             JPanel buttonPanel = new JPanel();
-            JButton addButton = new JButton("添加建筑物");
-            JButton updateButton = new JButton("更新建筑物");
-            JButton deleteButton = new JButton("删除建筑物");
+            JButton addButton = new JButton("Add Building");
+            JButton updateButton = new JButton("Update Building");
+            JButton deleteButton = new JButton("Delete Building");
             
             buttonPanel.add(addButton);
             buttonPanel.add(updateButton);
@@ -131,9 +123,9 @@ public class DataManagementPanel extends JPanel {
             for (Component comp : paginationPanel.getComponents()) {
                 if (comp instanceof JButton) {
                     JButton btn = (JButton) comp;
-                    if ("上一页".equals(btn.getText())) {
+                    if ("Previous".equals(btn.getText())) {
                         prevButton = btn;
-                    } else if ("下一页".equals(btn.getText())) {
+                    } else if ("Next".equals(btn.getText())) {
                         nextButton = btn;
                     }
                 } else if (comp instanceof JLabel) {
@@ -183,7 +175,7 @@ public class DataManagementPanel extends JPanel {
                 
                 // 更新分页信息 - 使用自己面板的组件
                 if (this.pageInfoLabel != null) {
-                    this.pageInfoLabel.setText("第 " + currentPage + " 页，共 " + totalPages + " 页，共 " + total + " 条记录");
+                    this.pageInfoLabel.setText("Page " + currentPage + " of " + totalPages + ", Total Records: " + total);
                 }
                 if (this.prevButton != null) {
                     this.prevButton.setEnabled(currentPage > 1);
@@ -193,42 +185,42 @@ public class DataManagementPanel extends JPanel {
                 }
                 
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "加载建筑物数据失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Fail to load building data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
         }
         
         private void addBuilding() {
             // 创建添加对话框
-            JDialog dialog = new JDialog((Frame)null, "添加建筑物", true);
+            JDialog dialog = new JDialog((Frame)null, "Add Building", true);
             dialog.setLayout(new GridLayout(7, 2, 10, 10));
             dialog.setSize(400, 300);
             dialog.setLocationRelativeTo(this);
             
             // 添加表单字段
-            dialog.add(new JLabel("建筑物代码:"));
+            dialog.add(new JLabel("Building Code:"));
             JTextField buildingCodeField = new JTextField();
             dialog.add(buildingCodeField);
             
-            dialog.add(new JLabel("建造日期:"));
+            dialog.add(new JLabel("Construction Date:"));
             JTextField constructionDateField = new JTextField();
             dialog.add(constructionDateField);
             
-            dialog.add(new JLabel("地址ID:"));
+            dialog.add(new JLabel("Address ID:"));
             JTextField addressIdField = new JTextField();
             dialog.add(addressIdField);
             
-            dialog.add(new JLabel("楼层数:"));
+            dialog.add(new JLabel("Num Floors:"));
             JTextField numFloorsField = new JTextField();
             dialog.add(numFloorsField);
             
-            dialog.add(new JLabel("负责人ID:"));
+            dialog.add(new JLabel("Supervisor Staff ID:"));
             JTextField supervisorStaffIdField = new JTextField();
             dialog.add(supervisorStaffIdField);
             
             // 添加按钮
-            JButton saveButton = new JButton("保存");
-            JButton cancelButton = new JButton("取消");
+            JButton saveButton = new JButton("Save");
+            JButton cancelButton = new JButton("Cancel");
             
             saveButton.addActionListener(e -> {
                 try {
@@ -246,16 +238,16 @@ public class DataManagementPanel extends JPanel {
                     }
                     
                     if (buildingService.addBuilding(buildingData)) {
-                        JOptionPane.showMessageDialog(dialog, "添加成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(dialog, "Add Building Success", "Success", JOptionPane.INFORMATION_MESSAGE);
                         dialog.dispose();
                         loadBuildingData();
                     } else {
-                        JOptionPane.showMessageDialog(dialog, "添加失败", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(dialog, "Add Building Failed", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(dialog, "添加失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog, "Add Building Failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(dialog, "请输入有效的数字", "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog, "Please input valid number", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             });
             
@@ -270,42 +262,42 @@ public class DataManagementPanel extends JPanel {
         private void updateBuilding() {
             int selectedRow = table.getSelectedRow();
             if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(this, "请选择要更新的建筑物", "提示", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please select a building to update", "Message", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
             
             int buildingId = (int) tableModel.getValueAt(selectedRow, 0);
             
             // 创建更新对话框
-            JDialog dialog = new JDialog((Frame)null, "更新建筑物", true);
+            JDialog dialog = new JDialog((Frame)null, "Update Building", true);
             dialog.setLayout(new GridLayout(7, 2, 10, 10));
             dialog.setSize(400, 300);
             dialog.setLocationRelativeTo(this);
             
             // 添加表单字段
-            dialog.add(new JLabel("建筑物代码:"));
+            dialog.add(new JLabel("Building Code:"));
             JTextField buildingCodeField = new JTextField((String) tableModel.getValueAt(selectedRow, 1));
             dialog.add(buildingCodeField);
             
-            dialog.add(new JLabel("建造日期:"));
+            dialog.add(new JLabel("Construction Date:"));
             JTextField constructionDateField = new JTextField(tableModel.getValueAt(selectedRow, 2).toString());
             dialog.add(constructionDateField);
             
-            dialog.add(new JLabel("地址ID:"));
+            dialog.add(new JLabel("Address ID:"));
             JTextField addressIdField = new JTextField(tableModel.getValueAt(selectedRow, 3).toString());
             dialog.add(addressIdField);
             
-            dialog.add(new JLabel("楼层数:"));
+            dialog.add(new JLabel("Num Floors:"));
             JTextField numFloorsField = new JTextField(tableModel.getValueAt(selectedRow, 4).toString());
             dialog.add(numFloorsField);
             
-            dialog.add(new JLabel("负责人ID:"));
+            dialog.add(new JLabel("Supervisor Staff ID:"));
             JTextField supervisorStaffIdField = new JTextField(tableModel.getValueAt(selectedRow, 5).toString());
             dialog.add(supervisorStaffIdField);
             
             // 添加按钮
-            JButton saveButton = new JButton("保存");
-            JButton cancelButton = new JButton("取消");
+            JButton saveButton = new JButton("Save");
+            JButton cancelButton = new JButton("Cancel");
             
             saveButton.addActionListener(e -> {
                 try {
@@ -323,16 +315,16 @@ public class DataManagementPanel extends JPanel {
                     }
                     
                     if (buildingService.updateBuilding(buildingId, updates)) {
-                        JOptionPane.showMessageDialog(dialog, "更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(dialog, "Update Building Success", "Success", JOptionPane.INFORMATION_MESSAGE);
                         dialog.dispose();
                         loadBuildingData();
                     } else {
-                        JOptionPane.showMessageDialog(dialog, "更新失败", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(dialog, "Update Building Failed", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(dialog, "更新失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog, "Update Building Failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(dialog, "请输入有效的数字", "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog, "Please input valid number", "Error", JOptionPane.ERROR_MESSAGE); 
                 }
             });
             
@@ -347,22 +339,22 @@ public class DataManagementPanel extends JPanel {
         private void deleteBuilding() {
             int selectedRow = table.getSelectedRow();
             if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(this, "请选择要删除的建筑物", "提示", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please select a building to delete", "Message", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
             
             int buildingId = (int) tableModel.getValueAt(selectedRow, 0);
             
-            if (JOptionPane.showConfirmDialog(this, "确定要删除该建筑物吗？", "确认删除", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if (JOptionPane.showConfirmDialog(this, "Are you sure to delete this building?", "Confirm Delete", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 try {
                     if (buildingService.deleteBuilding(buildingId)) {
-                        JOptionPane.showMessageDialog(this, "删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Delete Building Success", "Success", JOptionPane.INFORMATION_MESSAGE);
                         loadBuildingData();
                     } else {
-                        JOptionPane.showMessageDialog(this, "删除失败", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Delete Building Failed", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "删除失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Delete Building Failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -410,7 +402,7 @@ public class DataManagementPanel extends JPanel {
             add(searchPanel, BorderLayout.NORTH);
             
             // 创建表格
-            String[] columnNames = {"ID", "建筑物ID", "房间名称", "房间类型", "容量", "房间特性", "状态"};
+            String[] columnNames = {"ID", "Building ID", "Room Name", "Room Type", "Capacity", "Room Features", "Status"};
             tableModel = new DefaultTableModel(columnNames, 0);
             table = new JTable(tableModel);
             JScrollPane scrollPane = new JScrollPane(table);
@@ -422,9 +414,9 @@ public class DataManagementPanel extends JPanel {
             
             // 创建按钮面板
             JPanel buttonPanel = new JPanel();
-            JButton addButton = new JButton("添加房间");
-            JButton updateButton = new JButton("更新房间");
-            JButton deleteButton = new JButton("删除房间");
+            JButton addButton = new JButton("Add Room");
+            JButton updateButton = new JButton("Update Room");
+            JButton deleteButton = new JButton("Delete Room");
 
             buttonPanel.add(addButton);
             buttonPanel.add(updateButton);
@@ -713,7 +705,7 @@ public class DataManagementPanel extends JPanel {
             add(searchPanel, BorderLayout.NORTH);
             
             // 创建表格
-            String[] columnNames = {"ID", "公司代码", "公司名称", "联系人", "报价", "邮箱", "电话", "地址ID", "专业领域", "税号", "银行账户", "状态"};
+            String[] columnNames = {"ID", "Company Code", "Company Name", "Contact Person", "Quote", "Email", "Phone", "Address ID", "Specialization", "Tax ID", "Bank Account", "Status"};
             tableModel = new DefaultTableModel(columnNames, 0);
             table = new JTable(tableModel);
             JScrollPane scrollPane = new JScrollPane(table);
@@ -725,9 +717,9 @@ public class DataManagementPanel extends JPanel {
             
             // 创建按钮面板
             JPanel buttonPanel = new JPanel();
-            JButton addButton = new JButton("添加公司");
-            JButton updateButton = new JButton("更新公司");
-            JButton deleteButton = new JButton("删除公司");
+            JButton addButton = new JButton("Add Company");
+            JButton updateButton = new JButton("Update Company");
+            JButton deleteButton = new JButton("Delete Company");
 
             buttonPanel.add(addButton);
             buttonPanel.add(updateButton);
@@ -1075,7 +1067,7 @@ public class DataManagementPanel extends JPanel {
             add(searchPanel, BorderLayout.NORTH);
             
             // 创建表格
-            String[] columnNames = {"ID", "产品代码", "名称", "类型", "制造商", "MSDS链接", "危险类别", "存储要求", "状态"};
+            String[] columnNames = {"ID", "Product Code", "Name", "Type", "Manufacturer", "MSDS Link", "Hazard Class", "Storage Requirements", "Status"};
             tableModel = new DefaultTableModel(columnNames, 0);
             table = new JTable(tableModel);
             JScrollPane scrollPane = new JScrollPane(table);
@@ -1087,9 +1079,9 @@ public class DataManagementPanel extends JPanel {
             
             // 创建按钮面板
             JPanel buttonPanel = new JPanel();
-            JButton addButton = new JButton("添加化学物质");
-            JButton updateButton = new JButton("更新化学物质");
-            JButton deleteButton = new JButton("删除化学物质");
+            JButton addButton = new JButton("Add Chemical");
+            JButton updateButton = new JButton("Update Chemical");
+            JButton deleteButton = new JButton("Delete Chemical");
 
             buttonPanel.add(addButton);
             buttonPanel.add(updateButton);

@@ -31,7 +31,6 @@ public class ReportGenerationPanel extends JPanel {
         String[] reportTypes = {
                 "工人活动分布报表",
                 "活动类型分布报表",
-                "化学品使用消耗报表",
                 "工人工作效率报表",
                 "周维护趋势报表"
         };

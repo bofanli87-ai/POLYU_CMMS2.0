@@ -59,7 +59,7 @@ public class ActivityManagementPanel extends JPanel {
             allActivityList = new ArrayList<>();
             
             // 创建表格模型
-            String[] columnNames = {"活动ID", "类型", "标题", "状态", "日期", "预计停机时间", "危害等级"};
+            String[] columnNames = {"ActivityID", "Type", "Title", "Status", "Date", "Estimated downtime", "Hazard level"};
             tableModel = new DefaultTableModel(columnNames, 0);
             
             // 创建表格
@@ -67,12 +67,12 @@ public class ActivityManagementPanel extends JPanel {
             JScrollPane scrollPane = new JScrollPane(table);
             
             // 创建标题标签
-            JLabel titleLabel = new JLabel("活动管理", JLabel.CENTER);
+            JLabel titleLabel = new JLabel("Event Management", JLabel.CENTER);
             
             // 创建顶部按钮面板 - 放置查看人员分配和查看不可用地点按钮
             JPanel topButtonPanel = new JPanel();
-            JButton viewStaffAssignmentButton = new JButton("查看人员分配");
-            JButton viewUnavailableLocationsButton = new JButton("查看不可用地点");
+            JButton viewStaffAssignmentButton = new JButton("personnel allocation");
+            JButton viewUnavailableLocationsButton = new JButton("unavailable locations");
             
             viewStaffAssignmentButton.addActionListener(e -> viewStaffAssignment());
             viewUnavailableLocationsButton.addActionListener(e -> viewUnavailableLocations());
@@ -85,9 +85,9 @@ public class ActivityManagementPanel extends JPanel {
             
             // 根据权限显示不同按钮
             if (authService.hasPermission("MANAGE_ACTIVITY")) {
-                JButton createButton = new JButton("创建活动");
-                JButton assignButton = new JButton("分配活动");
-                JButton updateButton = new JButton("更新状态");
+                JButton createButton = new JButton("Create event");
+                JButton assignButton = new JButton("personnel allocation");
+                JButton updateButton = new JButton("update status");
                 
                 createButton.addActionListener(e -> createActivity());
                 assignButton.addActionListener(e -> assignActivity());
@@ -98,31 +98,31 @@ public class ActivityManagementPanel extends JPanel {
                 buttonPanel.add(updateButton);
             }
             
-            JButton viewDetailsButton = new JButton("查看详情");
+            JButton viewDetailsButton = new JButton("view details");
             viewDetailsButton.addActionListener(e -> viewActivityDetails());
             buttonPanel.add(viewDetailsButton);
             
             // 添加分页控件面板
             JPanel paginationPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-            JButton prevButton = new JButton("上一页");
-            JButton nextButton = new JButton("下一页");
-            JButton firstButton = new JButton("首页");
-            JButton lastButton = new JButton("末页");
+            // JButton prevButton = new JButton("previous page");
+            JButton nextButton = new JButton("next page");
+            JButton firstButton = new JButton("first page");
+            // JButton lastButton = new JButton("last page");
             // 先初始化pageInfoLabel，然后再使用它
-            pageInfoLabel = new JLabel("第 1 页，共 1 页");
+            pageInfoLabel = new JLabel("page 1 of 1");
             
             // 添加页码信息标签和分页按钮
             paginationPanel.add(firstButton);
-            paginationPanel.add(prevButton);
+            // paginationPanel.add(prevButton);
             paginationPanel.add(pageInfoLabel);
             paginationPanel.add(nextButton);
-            paginationPanel.add(lastButton);
+            // paginationPanel.add(lastButton);
             
             // 为分页按钮添加事件监听器
-            prevButton.addActionListener(e -> goToPreviousPage());
+            // prevButton.addActionListener(e -> goToPreviousPage());
             nextButton.addActionListener(e -> goToNextPage());
             firstButton.addActionListener(e -> goToFirstPage());
-            lastButton.addActionListener(e -> goToLastPage());
+            // lastButton.addActionListener(e -> goToLastPage());
             
             // 创建底部面板，包含操作按钮和分页控件
             JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -235,8 +235,8 @@ public class ActivityManagementPanel extends JPanel {
             totalRecords = allActivityList.size();
         } catch (SQLException ex) {
             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                    "加载活动数据", "加载失败: " + ex.getMessage());
-            throw new SQLException("加载活动数据失败: " + ex.getMessage(), ex);
+                    "load all activities", "load failed: " + ex.getMessage());
+            throw new SQLException("load all activities failed: " + ex.getMessage(), ex);
         }
     }
     
@@ -282,7 +282,7 @@ public class ActivityManagementPanel extends JPanel {
     private void updatePageInfo() {
         // 更新页码信息标签
         if (pageInfoLabel != null) {
-            pageInfoLabel.setText("第 " + currentPage + " 页，共 " + totalPages + " 页，共 " + totalRecords + " 条记录");
+            pageInfoLabel.setText("page " + currentPage + " of " + totalPages + ", total " + totalRecords + " records");
         }
     }
     
@@ -310,11 +310,6 @@ public class ActivityManagementPanel extends JPanel {
         }
     }
     
-    // 移除未使用的方法
-    // private void loadActivities() throws SQLException {
-    //     // 此方法已被loadAllActivities替代，保留为兼容现有调用
-    //     loadAllActivities();
-    // }
     
     // 添加获取当前活动的辅助方法
     private Activity getCurrentSelectedActivity() {
@@ -361,26 +356,26 @@ public class ActivityManagementPanel extends JPanel {
     
     private void createActivity() {
         // 记录创建活动操作
-        HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), "创建活动", "用户尝试创建新活动");
+        HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), "create activity", "user try to create a new activity");
         
         try {
             // 简单的活动创建对话框
-            String activityType = JOptionPane.showInputDialog(this, "请输入活动类型：", "创建活动", JOptionPane.PLAIN_MESSAGE);
+            String activityType = JOptionPane.showInputDialog(this, "Input the activity type:", "Create Activity", JOptionPane.PLAIN_MESSAGE);
             if (activityType == null || activityType.trim().isEmpty()) return;
             
-            String title = JOptionPane.showInputDialog(this, "请输入活动标题：", "创建活动", JOptionPane.PLAIN_MESSAGE);
+            String title = JOptionPane.showInputDialog(this, "Input the activity title:", "Create Activity", JOptionPane.PLAIN_MESSAGE);
             if (title == null || title.trim().isEmpty()) return;
             
-            String description = JOptionPane.showInputDialog(this, "请输入活动描述：", "创建活动", JOptionPane.PLAIN_MESSAGE);
+            String description = JOptionPane.showInputDialog(this, "Input the activity description:", "Create Activity", JOptionPane.PLAIN_MESSAGE);
             
             // 获取预计停机时间（分钟数）
-            String downtimeStr = JOptionPane.showInputDialog(this, "请输入预计停机时间（分钟）：", "创建活动", JOptionPane.PLAIN_MESSAGE);
+            String downtimeStr = JOptionPane.showInputDialog(this, "Input the expected downtime (minutes):", "Create Activity", JOptionPane.PLAIN_MESSAGE);
             Integer expectedDowntimeMinutes = 0; // 默认值
             if (downtimeStr != null && !downtimeStr.trim().isEmpty()) {
                 try {
                     expectedDowntimeMinutes = Integer.parseInt(downtimeStr.trim());
                 } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(this, "请输入有效的数字作为预计停机时间！", "输入错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Input a valid number for expected downtime!", "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -401,15 +396,15 @@ public class ActivityManagementPanel extends JPanel {
             boolean success = activityService.addActivity(newActivity);
             
             if (success) {
-                JOptionPane.showMessageDialog(this, "活动创建成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Activity created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 // 重新加载活动列表
                 refreshActivityList();
             } else {
-                JOptionPane.showMessageDialog(this, "活动创建失败！", "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Activity creation failed!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "创建活动时发生错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-            HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), "创建活动", "创建失败: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error creating activity: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
+            HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), "create activity", "create failed: " + ex.getMessage());
         }
     }
     
@@ -425,9 +420,9 @@ public class ActivityManagementPanel extends JPanel {
             // 加载当前页数据
             loadPageData(currentPage);
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "刷新活动列表失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error refreshing activity list: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                    "刷新活动列表", "刷新失败: " + ex.getMessage());
+                    "refresh activity list", "refresh failed: " + ex.getMessage());
         }
     }
     
@@ -436,7 +431,7 @@ public class ActivityManagementPanel extends JPanel {
         if (selectedActivity != null) {
             // 记录分配活动操作
             int activityId = selectedActivity.getActivityId();
-            HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), "分配活动", "用户尝试分配活动ID=" + activityId);
+            HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), "assign activity", "user try to assign activity ID=" + activityId);
             
             try {
                 // 获取服务实例 - 使用单例模式
@@ -457,7 +452,7 @@ public class ActivityManagementPanel extends JPanel {
                 JTextArea responsibilityArea = (JTextArea)((JScrollPane)((JPanel)bottomPanel.getComponent(0)).getComponent(0)).getViewport().getView();
                 
                 // 添加组件到对话框
-                assignmentDialog.add(new JLabel("请选择要分配到活动的员工：", JLabel.CENTER), BorderLayout.NORTH);
+                assignmentDialog.add(new JLabel("Please select the staff to assign to the activity:", JLabel.CENTER), BorderLayout.NORTH);
                 assignmentDialog.add(scrollPane, BorderLayout.CENTER);
                 assignmentDialog.add(bottomPanel, BorderLayout.SOUTH);
                 
@@ -466,8 +461,8 @@ public class ActivityManagementPanel extends JPanel {
                 List<Map<String, Object>> assignedStaffDetails = worksForService.queryStaffByActivityId(activityId);
                 
                 // 记录调试信息
-                System.out.println("分配活动-员工总数: " + (allStaff != null ? allStaff.size() : 0));
-                System.out.println("分配活动-已分配员工数: " + (assignedStaffDetails != null ? assignedStaffDetails.size() : 0));
+                System.out.println("assign activity - total staff: " + (allStaff != null ? allStaff.size() : 0));
+                System.out.println("assign activity - assigned staff: " + (assignedStaffDetails != null ? assignedStaffDetails.size() : 0));
                 
                 // 准备已分配员工数据
                 Map<Integer, String> assignedStaffInfo = new HashMap<>();
@@ -479,9 +474,16 @@ public class ActivityManagementPanel extends JPanel {
                 loadStaffData(allStaff, assignedStaffIds, assignedStaffInfo, staffTableModel, staffIdToRowMap);
                 
                 // 设置按钮事件
-                JButton assignButton = (JButton)((JPanel)bottomPanel.getComponent(1)).getComponent(0);
-                JButton unassignButton = (JButton)((JPanel)bottomPanel.getComponent(1)).getComponent(1);
-                JButton cancelButton = (JButton)((JPanel)bottomPanel.getComponent(1)).getComponent(2);
+                JButton selectAllButton = (JButton)((JPanel)bottomPanel.getComponent(1)).getComponent(0);
+                JButton assignButton = (JButton)((JPanel)bottomPanel.getComponent(1)).getComponent(1);
+                JButton unassignButton = (JButton)((JPanel)bottomPanel.getComponent(1)).getComponent(2);
+                JButton cancelButton = (JButton)((JPanel)bottomPanel.getComponent(1)).getComponent(3);
+                
+                // 设置全选按钮监听器
+                selectAllButton.addActionListener(e -> selectAllStaff(staffTableModel));
+                
+                // 为了让全选按钮能在多次点击间切换全选/取消全选状态，使用一个标志变量
+                selectAllButton.putClientProperty("selected", false);
                 
                 setupAssignButtonListener(assignButton, assignmentDialog, responsibilityArea, staffTableModel, allStaff, 
                         selectedActivity, activityId, worksForService, staffIdToRowMap);
@@ -497,16 +499,16 @@ public class ActivityManagementPanel extends JPanel {
                 assignmentDialog.setVisible(true);
                 
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "加载员工数据时发生数据库错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error loading staff data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                        "分配活动", "加载员工数据失败: " + ex.getMessage());
+                        "assign activity", "load staff data failed: " + ex.getMessage());
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "系统错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "System error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                        "分配活动", "系统异常: " + ex.getMessage());
+                        "assign activity", "system exception: " + ex.getMessage());
             }
         } else {
-            JOptionPane.showMessageDialog(this, "请先选择一个活动", "提示", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select an activity first.", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
     
@@ -525,7 +527,7 @@ public class ActivityManagementPanel extends JPanel {
      * 创建员工表格模型
      */
     private DefaultTableModel createStaffTableModel() {
-        String[] columnNames = {"选择", "员工姓名", "员工编号", "角色", "状态", "职责描述"};
+        String[] columnNames = {"Select", "Staff Name", "Staff ID", "Role", "Status", "Responsibility"};
         return new DefaultTableModel(columnNames, 0) {
             @Override
             public Class<?> getColumnClass(int column) {
@@ -555,15 +557,17 @@ public class ActivityManagementPanel extends JPanel {
         
         // 职责输入区域
         JPanel responsibilityPanel = new JPanel(new BorderLayout());
-        responsibilityPanel.setBorder(BorderFactory.createTitledBorder("批量职责描述"));
+        responsibilityPanel.setBorder(BorderFactory.createTitledBorder("Batch Responsibility Description"));
         JTextArea responsibilityArea = new JTextArea(2, 40);
         responsibilityPanel.add(new JScrollPane(responsibilityArea), BorderLayout.CENTER);
         
         // 创建按钮面板
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton assignButton = new JButton("分配选中员工");
-        JButton unassignButton = new JButton("取消选中员工分配");
-        JButton cancelButton = new JButton("关闭");
+        JButton selectAllButton = new JButton("Select All");
+        JButton assignButton = new JButton("Assign Selected Staff");
+        JButton unassignButton = new JButton("Unassign Selected Staff");
+        JButton cancelButton = new JButton("Close");
+        buttonPanel.add(selectAllButton);
         buttonPanel.add(assignButton);
         buttonPanel.add(unassignButton);
         buttonPanel.add(cancelButton);
@@ -593,7 +597,7 @@ public class ActivityManagementPanel extends JPanel {
                         assignedStaffInfo.put(staffId, responsibility);
                     }
                 } catch (Exception e) {
-                    System.err.println("处理已分配员工数据错误: " + e.getMessage());
+                    System.err.println("Error processing assigned staff data: " + e.getMessage());
                     continue;
                 }
             }
@@ -626,12 +630,12 @@ public class ActivityManagementPanel extends JPanel {
                     
                     // 检查分配状态
                     boolean isAssigned = staffId != null && assignedStaffIds.contains(staffId);
-                    String status = isAssigned ? "已分配" : "空闲";
+                    String status = isAssigned ? "Assigned" : "Free";
                     String responsibility = isAssigned && staffId != null ? assignedStaffInfo.getOrDefault(staffId, "") : "";
                     
-                    // 添加到表格
+                    // 添加到表格 - 默认全不选
                     int rowIndex = tableModel.getRowCount();
-                    tableModel.addRow(new Object[]{!isAssigned, staffName, staffNumber, role, status, responsibility});
+                    tableModel.addRow(new Object[]{false, staffName, staffNumber, role, status, responsibility});
                     addedCount++;
                     
                     // 保存映射关系
@@ -639,13 +643,50 @@ public class ActivityManagementPanel extends JPanel {
                         staffIdToRowMap.put(staffId, rowIndex);
                     }
                 } catch (Exception e) {
-                    System.err.println("添加员工到表格时出错: " + e.getMessage());
+                    System.err.println("Error adding staff to table: " + e.getMessage());
                     continue;
                 }
             }
         }
         
-        System.out.println("成功添加到表格的员工数量: " + addedCount);
+        System.out.println("Successfully added " + addedCount + " staff to the table.");
+    }
+    
+    /**
+     * 全选所有空闲员工
+     */
+    private void selectAllStaff(DefaultTableModel tableModel) {
+        // 获取调用此方法的按钮
+        JButton sourceButton = (JButton)SwingUtilities.getAncestorOfClass(JButton.class, (Component)SwingUtilities.getWindowAncestor(this).getFocusOwner());
+        if (sourceButton == null) {
+            // 如果无法获取按钮，默认全选
+            selectAllStaffImpl(tableModel, true);
+            return;
+        }
+        
+        // 切换全选状态
+        Boolean isSelected = (Boolean)sourceButton.getClientProperty("selected");
+        boolean newState = !Boolean.TRUE.equals(isSelected);
+        sourceButton.putClientProperty("selected", newState);
+        
+        // 更新按钮文本
+        sourceButton.setText(newState ? "Unselect All" : "Select All");
+        
+        // 执行全选或取消全选
+        selectAllStaffImpl(tableModel, newState);
+    }
+    
+    /**
+     * 全选实现
+     */
+    private void selectAllStaffImpl(DefaultTableModel tableModel, boolean select) {
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            String status = (String)tableModel.getValueAt(i, 4);
+            // 只处理空闲状态的员工
+            if ("Free".equals(status)) {
+                tableModel.setValueAt(select, i, 0);
+            }
+        }
     }
     
     /**
@@ -658,7 +699,7 @@ public class ActivityManagementPanel extends JPanel {
             try {
                 String batchResponsibility = responsibilityArea.getText().trim();
                 if (batchResponsibility.isEmpty()) {
-                    JOptionPane.showMessageDialog(dialog, "请输入职责描述", "提示", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog, "Please enter responsibility description.", "Warning", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 
@@ -674,23 +715,23 @@ public class ActivityManagementPanel extends JPanel {
                     
                     // 记录日志
                     HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                            "分配活动", "成功将" + assignedCount + "名员工分配到活动ID=" + activityId);
+                            "Assign Activity", "Successfully assigned " + assignedCount + " staff to activity ID=" + activityId);
                     
                     // 显示结果
                     JOptionPane.showMessageDialog(dialog, 
-                            "分配完成：成功 " + assignedCount + " 人", 
-                            "分配结果", JOptionPane.INFORMATION_MESSAGE);
+                            "Assignment completed: Successfully " + assignedCount + " staff.", 
+                            "Assignment Result", JOptionPane.INFORMATION_MESSAGE);
                     
                     // 刷新列表
                     refreshActivityList();
                 } else {
-                    JOptionPane.showMessageDialog(dialog, "没有选中可分配的员工", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog, "No assignable staff selected.", "Information", JOptionPane.INFORMATION_MESSAGE);
                 }
                 
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(dialog, "数据库错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                        "分配活动", "数据库异常: " + ex.getMessage());
+                        "Assign Activity", "Database exception: " + ex.getMessage());
             }
         });
     }
@@ -704,8 +745,8 @@ public class ActivityManagementPanel extends JPanel {
             try {
                 // 确认对话框
                 int confirmResult = JOptionPane.showConfirmDialog(dialog,
-                        "确定要取消选中员工的活动分配吗？",
-                        "确认取消分配",
+                        "Are you sure you want to unassign the selected staff from activity ID=" + activityId + "?",
+                        "Confirm Unassignment",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE);
                 
@@ -721,9 +762,9 @@ public class ActivityManagementPanel extends JPanel {
                 showUnassignmentResult(dialog, unassignedCount, failedCount);
                 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(dialog, "取消分配过程中出错: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, "Error during unassignment process: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                        "分配活动", "批量取消分配异常: " + ex.getMessage());
+                        "Assign Activity", "Batch unassignment exception: " + ex.getMessage());
             }
         });
     }
@@ -740,7 +781,7 @@ public class ActivityManagementPanel extends JPanel {
             String status = (String) tableModel.getValueAt(i, 4);
             
             // 只处理选中且状态为空闲的员工
-            if (Boolean.TRUE.equals(isSelected) && "空闲".equals(status)) {
+            if (Boolean.TRUE.equals(isSelected) && "Free".equals(status)) {
                 try {
                     String staffNumber = (String) tableModel.getValueAt(i, 2);
                     Integer staffId = findStaffIdByNumber(allStaff, staffNumber);
@@ -750,7 +791,7 @@ public class ActivityManagementPanel extends JPanel {
                     }
                 } catch (Exception ex) {
                     HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                            "分配活动", "处理员工时出错: " + ex.getMessage());
+                            "Assign Activity", "Error processing staff work hours: " + ex.getMessage());
                 }
             }
         }
@@ -768,7 +809,7 @@ public class ActivityManagementPanel extends JPanel {
             Integer staffId = findStaffIdByNumber(allStaff, staffNumber);
             
             if (staffId != null && selectedStaffIds.contains(staffId)) {
-                tableModel.setValueAt("已分配", i, 4);
+                tableModel.setValueAt("Assigned", i, 4);
                 tableModel.setValueAt(responsibility, i, 5);
                 tableModel.setValueAt(false, i, 0);
             }
@@ -788,10 +829,11 @@ public class ActivityManagementPanel extends JPanel {
             String status = (String) tableModel.getValueAt(i, 4);
             
             // 只处理选中且状态为已分配的员工
-            if (Boolean.TRUE.equals(isSelected) && "已分配".equals(status)) {
+            if (Boolean.TRUE.equals(isSelected) && "Assigned".equals(status)) {
+                Integer staffId = null;
                 try {
                     String staffNumber = (String) tableModel.getValueAt(i, 2);
-                    Integer staffId = findStaffIdByNumber(allStaff, staffNumber);
+                    staffId = findStaffIdByNumber(allStaff, staffNumber);
                     
                     if (staffId != null) {
                         boolean success = worksForService.removeStaffFromActivityByStaffAndActivity(staffId, activityId);
@@ -801,17 +843,18 @@ public class ActivityManagementPanel extends JPanel {
                             updateUnassignedStaffStatus(tableModel, i);
                             
                             HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                                    "分配活动", "成功将员工ID=" + staffId + "从活动ID=" + activityId + "移除");
+                                    "Assign Activity", "Successfully unassigned staff ID=" + staffId + " from activity ID=" + activityId);
                         } else {
                             failedCount++;
                             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                                    "分配活动", "移除员工ID=" + staffId + "失败");
+                                    "Assign Activity", "Failed to unassign staff ID=" + staffId + " from activity ID=" + activityId);
                         }
                     }
                 } catch (Exception ex) {
                     failedCount++;
+                    String staffInfo = (staffId != null) ? "ID=" + staffId : "unknown ID"; 
                     HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                            "分配活动", "移除员工时出错: " + ex.getMessage());
+                            "Assign Activity", "Error unassigning staff " + staffInfo + " from activity ID=" + activityId + ": " + ex.getMessage());
                 }
             }
         }
@@ -823,7 +866,7 @@ public class ActivityManagementPanel extends JPanel {
      * 更新取消分配后的员工状态
      */
     private void updateUnassignedStaffStatus(DefaultTableModel tableModel, int rowIndex) {
-        tableModel.setValueAt("空闲", rowIndex, 4);
+        tableModel.setValueAt("Free", rowIndex, 4);
         tableModel.setValueAt("", rowIndex, 5); // 清空职责
         tableModel.setValueAt(false, rowIndex, 0);
     }
@@ -833,17 +876,17 @@ public class ActivityManagementPanel extends JPanel {
      */
     private void showUnassignmentResult(JDialog dialog, int unassignedCount, int failedCount) {
         if (unassignedCount > 0) {
-            String message = "取消分配完成：成功 " + unassignedCount + " 人";
+            String message = "Unassignment completed: successfully " + unassignedCount + " person";
             if (failedCount > 0) {
-                message += "，失败 " + failedCount + " 人";
+                message += "，failed " + failedCount + " person";
             }
-            JOptionPane.showMessageDialog(dialog, message, "取消分配结果", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(dialog, message, "Unassignment Result", JOptionPane.INFORMATION_MESSAGE);
             refreshActivityList();
         } else if (failedCount > 0) {
             JOptionPane.showMessageDialog(dialog, 
-                    "取消分配失败，请检查所选员工是否已被分配", "操作失败", JOptionPane.ERROR_MESSAGE);
+                    "Unassignment failed, please check if the selected staff are assigned to the activity", "Operation Failed", JOptionPane.ERROR_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(dialog, "未选择要取消分配的员工", "提示", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(dialog, "No staff selected for unassignment", "提示", JOptionPane.INFORMATION_MESSAGE);
         }
     }
     
@@ -877,7 +920,7 @@ public class ActivityManagementPanel extends JPanel {
             try {
                 return Integer.parseInt(value.toString());
             } catch (NumberFormatException e) {
-                System.err.println("无效的数字格式: " + value + " 用于键: " + key);
+                System.err.println("Invalid number format: " + value + " for key: " + key);
             }
         }
         return null;
@@ -901,15 +944,16 @@ public class ActivityManagementPanel extends JPanel {
         if (selectedActivity != null) {
             // 记录更新活动状态操作
             int activityId = selectedActivity.getActivityId();
-            HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), "更新活动状态", "用户尝试更新活动ID=" + activityId + "的状态");
+            HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), 
+                    "Update Activity Status", "User tried to update status of activity ID=" + activityId);
             
             try {
                 // 提供状态选择
-                String[] options = {"planned", "进行中", "completed", "取消"};
+                String[] options = {"planned", "ongoing", "completed", "cancelled"};
                 String newStatus = (String) JOptionPane.showInputDialog(
                     this,
-                    "请选择新状态：",
-                    "更新活动状态",
+                    "Select new status:",
+                    "Update Activity Status",
                     JOptionPane.QUESTION_MESSAGE,
                     null,
                     options,
@@ -921,23 +965,23 @@ public class ActivityManagementPanel extends JPanel {
                     boolean success = activityService.updateActivityStatus(activityId, newStatus);
                     
                     if (success) {
-                        JOptionPane.showMessageDialog(this, "活动状态更新成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Activity status updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                         // 重新加载活动列表（带分页）
                         refreshActivityList();
                     } else {
-                        JOptionPane.showMessageDialog(this, "活动状态更新失败！", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Failed to update activity status!", "Error", JOptionPane.ERROR_MESSAGE);   
                     }
                 }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "更新活动状态时发生错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-                HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), "更新活动状态", "更新失败: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Error updating activity status: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), "Update Activity Status", "Update failed: " + ex.getMessage());
             } catch (Exception ex) {
                 // 捕获其他可能的异常
-                JOptionPane.showMessageDialog(this, "更新状态时发生未知错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-                HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), "更新活动状态", "未知错误: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Unknown error updating activity status: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), "Update Activity Status", "Unknown error: " + ex.getMessage());
             }
         } else {
-            JOptionPane.showMessageDialog(this, "请先选择一个活动", "提示", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select an activity to update its status.", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
     
@@ -946,7 +990,7 @@ public class ActivityManagementPanel extends JPanel {
         if (selectedActivity != null) {
             // 记录查看活动详情操作
             int activityId = selectedActivity.getActivityId();
-            HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), "查看活动详情", "用户查看活动ID=" + activityId + "的详情");
+            HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), "View Activity Details", "User viewed details of activity ID=" + activityId);
             
             try {
                 // 使用ActivityService查询特定活动
@@ -958,13 +1002,13 @@ public class ActivityManagementPanel extends JPanel {
                     Map<String, Object> activityData = results.get(0);
                     // 构建详情文本
                     StringBuilder details = new StringBuilder();
-                    details.append("活动详情\n\n");
-                    details.append("活动ID: ").append(activityData.get("activityId")).append("\n");
-                    details.append("活动类型: ").append(activityData.get("activityType")).append("\n");
-                    details.append("标题: ").append(activityData.get("title")).append("\n");
-                    details.append("描述: ").append(activityData.get("description")).append("\n");
-                    details.append("状态: ").append(activityData.get("status")).append("\n");
-                    details.append("优先级: ").append(activityData.get("priority")).append("\n");
+                    details.append("Activity Details\n\n");
+                    details.append("Activity ID: ").append(activityData.get("activityId")).append("\n");
+                    details.append("Activity Type: ").append(activityData.get("activityType")).append("\n");
+                    details.append("Title: ").append(activityData.get("title")).append("\n");   
+                    details.append("Description: ").append(activityData.get("description")).append("\n");
+                    details.append("Status: ").append(activityData.get("status")).append("\n");
+                    details.append("Priority: ").append(activityData.get("priority")).append("\n");
                     
                     // 处理日期字段，确保正确转换
                     Object datetimeValue = activityData.get("activityDatetime");
@@ -976,7 +1020,7 @@ public class ActivityManagementPanel extends JPanel {
                     } else if (datetimeValue != null) {
                         datetimeStr = datetimeValue.toString();
                     }
-                    details.append("活动时间: ").append(datetimeStr).append("\n");
+                    details.append("Activity Datetime: ").append(datetimeStr).append("\n");
                     
                     // 处理预计不可用时长字段，支持多个可能的字段名
                     Object durationValue = activityData.get("expectedUnavailableDuration");
@@ -993,7 +1037,7 @@ public class ActivityManagementPanel extends JPanel {
                     } else if (durationValue != null) {
                         durationStr = durationValue.toString();
                     }
-                    details.append("预计不可用时长: ").append(durationStr).append("\n");
+                    details.append("Expected Unavailable Duration: ").append(durationStr).append("\n");
                     
                     // 处理实际完成时间字段
                     Object completionValue = activityData.get("actualCompletionDatetime");
@@ -1005,27 +1049,27 @@ public class ActivityManagementPanel extends JPanel {
                     } else if (completionValue != null) {
                         completionStr = completionValue.toString();
                     }
-                    details.append("实际完成时间: ").append(completionStr).append("\n");
+                    details.append("Actual Completion Datetime: ").append(completionStr).append("\n");
                     
-                    details.append("风险等级: ").append(activityData.get("hazardLevel") != null ? activityData.get("hazardLevel") : "").append("\n");
-                    details.append("设施类型: ").append(activityData.get("facilityType") != null ? activityData.get("facilityType") : "").append("\n");
-                    details.append("创建员工ID: ").append(activityData.get("createdByStaffId") != null ? activityData.get("createdByStaffId") : "").append("\n");
+                    details.append("Hazard Level: ").append(activityData.get("hazardLevel") != null ? activityData.get("hazardLevel") : "").append("\n");
+                    details.append("Facility Type: ").append(activityData.get("facilityType") != null ? activityData.get("facilityType") : "").append("\n");
+                    details.append("Created By Staff ID: ").append(activityData.get("createdByStaffId") != null ? activityData.get("createdByStaffId") : "").append("\n");
                     
                     // 显示详情对话框
-                    JOptionPane.showMessageDialog(this, details.toString(), "活动详情", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, details.toString(), "Activity Details", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "未找到活动详情", "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "No activity details found", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "查询活动详情时发生错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), "查看活动详情", "查询失败: " + ex.getMessage());
             } catch (Exception ex) {
                 // 捕获其他可能的异常，如类型转换错误
-                JOptionPane.showMessageDialog(this, "查看详情时发生未知错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), "查看活动详情", "未知错误: " + ex.getMessage());
             }
         } else {
-            JOptionPane.showMessageDialog(this, "请先选择一个活动", "提示", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select an activity first", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
     
@@ -1034,7 +1078,7 @@ public class ActivityManagementPanel extends JPanel {
      */
     private void viewStaffAssignment() {
         System.out.println("============================================");
-        System.out.println("用户点击查看人员分配按钮");
+        System.out.println("User clicked View Staff Assignment button");
         // 记录查看人员分配操作
         HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), "查看人员分配", "用户查看当前任务分配的人员和空闲人员");
         
@@ -1073,25 +1117,27 @@ public class ActivityManagementPanel extends JPanel {
             assignmentDialog.setVisible(true);
             
         } catch (SQLException ex) {
-            System.out.println("错误: 查询人员分配情况时发生错误 - " + ex.getMessage());
+            System.out.println("Error: " + ex.getMessage());
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "查询人员分配情况时发生错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), "查看人员分配", "查询失败: " + ex.getMessage());
         }
-        System.out.println("人员分配查看操作完成");
+        System.out.println("Staff assignment viewing operation completed");
         System.out.println("============================================");
     }
     
     /**
-     * 创建已分配人员面板
+     * Creates assigned staff panel
+     * Note: This method is currently unused, kept for future extension
      */
+    @SuppressWarnings("unused")
     private JPanel createAssignedStaffPanel() throws SQLException {
-        System.out.println("开始创建已分配人员面板...");
+        System.out.println("Starting to create assigned staff panel...");
         JPanel panel = new JPanel(new BorderLayout());
         
-        // 创建表格模型
-        System.out.println("初始化已分配人员表格模型...");
-        String[] columnNames = {"活动ID", "活动标题", "活动状态", "员工姓名", "员工编号", "职责描述", "分配时间"};
+        // Create table model
+        System.out.println("Initializing assigned staff table model...");
+        String[] columnNames = {"Activity ID", "Activity Title", "Activity Status", "Staff Name", "Staff ID", "Responsibility", "Assignment Time"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -1112,7 +1158,7 @@ public class ActivityManagementPanel extends JPanel {
         System.out.println("查询已分配人员数据...");
         WorksForService worksForService = WorksForService.getInstance();
         List<Map<String, Object>> assignedStaffData = worksForService.queryWorksFor(null);
-        System.out.println("获取到 " + assignedStaffData.size() + " 条人员分配记录");
+        System.out.println("Fetched " + assignedStaffData.size() + " assigned staff records");
         
         int addedCount = 0;
         for (Map<String, Object> data : assignedStaffData) {
@@ -1176,13 +1222,13 @@ public class ActivityManagementPanel extends JPanel {
         
         // 添加统计信息
         int totalAssigned = tableModel.getRowCount();
-        System.out.println("已分配人员统计: " + totalAssigned + " 个记录");
-        JLabel statsLabel = new JLabel("总计: " + totalAssigned + " 个人员分配记录");
+        System.out.println("Total assigned staff records: " + totalAssigned);
+        JLabel statsLabel = new JLabel("Total: " + totalAssigned + " assigned staff records");
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         statsPanel.add(statsLabel);
         panel.add(statsPanel, BorderLayout.NORTH);
         
-        System.out.println("已分配人员面板创建完成");
+        System.out.println("done");
         return panel;
     }
     
@@ -1190,18 +1236,18 @@ public class ActivityManagementPanel extends JPanel {
      * 创建人员分配树状图面板，包含已分配和空闲两个模块
      */
     private JPanel createStaffAssignmentTreePanel() throws SQLException {
-        System.out.println("开始创建人员分配树状图面板...");
+        System.out.println("Creating staff assignment tree panel...");
         JPanel panel = new JPanel(new BorderLayout());
         
         // 创建根节点
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("人员分配概览");
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Staff Assignment Overview");
         
         // 创建已分配人员模块节点
-        DefaultMutableTreeNode assignedStaffNode = new DefaultMutableTreeNode("已分配人员");
+        DefaultMutableTreeNode assignedStaffNode = new DefaultMutableTreeNode("Assigned Staff");
         rootNode.add(assignedStaffNode);
         
         // 创建空闲人员模块节点
-        DefaultMutableTreeNode availableStaffNode = new DefaultMutableTreeNode("空闲人员");
+        DefaultMutableTreeNode availableStaffNode = new DefaultMutableTreeNode("Available Staff");
         rootNode.add(availableStaffNode);
         
         // 加载已分配人员数据
@@ -1224,12 +1270,12 @@ public class ActivityManagementPanel extends JPanel {
         panel.add(scrollPane, BorderLayout.CENTER);
         
         // 添加统计信息
-        JLabel statsLabel = new JLabel("树状图显示：已分配人员和空闲人员两个模块");
+        JLabel statsLabel = new JLabel("Tree display: Assigned Staff and Available Staff");
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         statsPanel.add(statsLabel);
         panel.add(statsPanel, BorderLayout.NORTH);
         
-        System.out.println("人员分配树状图面板创建完成");
+        System.out.println("done");
         return panel;
     }
     
@@ -1237,7 +1283,7 @@ public class ActivityManagementPanel extends JPanel {
      * 加载已分配人员数据
      */
     private void loadAssignedStaffData(DefaultMutableTreeNode parentNode) throws SQLException {
-        System.out.println("开始加载已分配人员数据...");
+        System.out.println("Loading assigned staff data...");
         
         // 查询所有已分配人员数据
         WorksForService worksForService = WorksForService.getInstance();
@@ -1279,14 +1325,14 @@ public class ActivityManagementPanel extends JPanel {
             }
         }
         
-        System.out.println("已分配人员数据加载完成，共" + staffTasksMap.size() + "个人员节点");
+        System.out.println("Assigned staff data loading complete, " + staffTasksMap.size() + " staff nodes created");
     }
     
     /**
      * 加载空闲人员数据
      */
     private void loadAvailableStaffData(DefaultMutableTreeNode parentNode) throws SQLException {
-        System.out.println("开始加载空闲人员数据...");
+        System.out.println("Loading available staff data...");
         
         // 查询所有员工
         StaffService staffService = StaffService.getInstance();
@@ -1318,13 +1364,13 @@ public class ActivityManagementPanel extends JPanel {
                         availableCount++;
                     }
                 } catch (Exception e) {
-                    System.out.println("处理员工数据失败: " + e.getMessage());
+                    System.out.println("Error processing staff data: " + e.getMessage());
                     continue;
                 }
             }
         }
         
-        System.out.println("空闲人员数据加载完成，共" + availableCount + "个空闲人员节点");
+        System.out.println("Available staff data loading complete, " + availableCount + " available staff nodes created");
     }
     
     /**
@@ -1339,9 +1385,9 @@ public class ActivityManagementPanel extends JPanel {
         
         String nodeText = staffName + " (" + staffNumber + ") - " + roleName;
         if (taskCount > 0) {
-            nodeText += " [" + taskCount + "个任务]";
+            nodeText += " [" + taskCount + " tasks]";
         } else {
-            nodeText += " [无任务]";
+            nodeText += " [no tasks]";
         }
         return new DefaultMutableTreeNode(nodeText);
     }
@@ -1353,15 +1399,15 @@ public class ActivityManagementPanel extends JPanel {
         StringBuilder nodeText = new StringBuilder();
         
         // 获取活动基本信息
-        String activityTitle = taskData.get("title") != null ? taskData.get("title").toString() : "未命名活动";
+        String activityTitle = taskData.get("title") != null ? taskData.get("title").toString() : "Unnamed Activity";
         String activityId = taskData.get("activityId") != null ? taskData.get("activityId").toString() : "";
         
         // 构建任务节点文本
-        nodeText.append("活动: ").append(activityTitle).append(" (ID: ").append(activityId).append(")\n");
+        nodeText.append("Activity: ").append(activityTitle).append(" (ID: ").append(activityId).append(")\n");
         
         // 添加职责描述
         String responsibility = taskData.get("activityResponsibility") != null ? taskData.get("activityResponsibility").toString() : "无";
-        nodeText.append("职责: ").append(responsibility).append("\n");
+        nodeText.append("Responsibility: ").append(responsibility).append("\n");
         
         // 添加分配时间
         if (taskData.get("assignedDatetime") != null) {
@@ -1402,26 +1448,26 @@ public class ActivityManagementPanel extends JPanel {
         try {
             // 创建对话框
             JDialog locationDialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), 
-                    "不可用地点", true);
+                    "Unavailable Locations", true);
             locationDialog.setSize(900, 700);
             locationDialog.setLayout(new BorderLayout());
             
             // 创建筛选面板
             JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-            filterPanel.setBorder(BorderFactory.createTitledBorder("筛选条件"));
+            filterPanel.setBorder(BorderFactory.createTitledBorder("Filter Conditions"));
             
             // 地点类型筛选
-            JLabel typeLabel = new JLabel("地点类型:");
-            JComboBox<String> typeComboBox = new JComboBox<>(new String[]{"全部", "building", "room", "level", "square", "gate", "canteen"});
+            JLabel typeLabel = new JLabel("Location Type:");
+            JComboBox<String> typeComboBox = new JComboBox<>(new String[]{"All", "building", "room", "level", "square", "gate", "canteen"});
             
             // 时间段筛选
-            JLabel timeRangeLabel = new JLabel("查看时间段:");
+            JLabel timeRangeLabel = new JLabel("Time Range:");
             JComboBox<String> timeRangeComboBox = new JComboBox<>(new String[]{
-                "现在及未来", "仅现在", "未来24小时", "未来7天", "自定义"
+                "Now and Future", "Only Now", "Next 24 Hours", "Next 7 Days", "Custom Range"
             });
             
             // 刷新按钮
-            JButton refreshButton = new JButton("刷新");
+            JButton refreshButton = new JButton("Refresh");
             
             filterPanel.add(typeLabel);
             filterPanel.add(typeComboBox);
@@ -1430,7 +1476,7 @@ public class ActivityManagementPanel extends JPanel {
             filterPanel.add(refreshButton);
             
             // 创建表格模型
-            String[] columnNames = {"活动ID", "活动标题", "活动类型", "活动状态", "不可用地点", "地点类型", "开始时间", "预计结束时间", "冲突原因"};
+            String[] columnNames = {"Activity ID", "Activity Title", "Activity Type", "Activity Status", "Unavailable Location", "Location Type", "Start Time", "End Time", "Conflict Reason"};
             DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -1486,8 +1532,8 @@ public class ActivityManagementPanel extends JPanel {
                                 }
                             } catch (SQLException ex) {
                                 JOptionPane.showMessageDialog(locationDialog, 
-                                        "获取活动详情失败: " + ex.getMessage(), 
-                                        "错误", JOptionPane.ERROR_MESSAGE);
+                                        "Failed to get activity details: " + ex.getMessage(), 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         }
                     }
@@ -1498,7 +1544,7 @@ public class ActivityManagementPanel extends JPanel {
             
             // 添加统计信息
             JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JLabel statsLabel = new JLabel("总计: 0 个不可用地点");
+            JLabel statsLabel = new JLabel("Total Unavailable Locations: 0");
             statsPanel.add(statsLabel);
             
             // 顶部面板：筛选条件和统计信息
@@ -1508,12 +1554,12 @@ public class ActivityManagementPanel extends JPanel {
             
             // 添加关闭按钮
             JPanel buttonPanel = new JPanel();
-            JButton closeButton = new JButton("关闭");
+            JButton closeButton = new JButton("Close");
             closeButton.addActionListener(e -> locationDialog.dispose());
             buttonPanel.add(closeButton);
             
             // 添加导出按钮
-            JButton exportButton = new JButton("导出数据");
+            JButton exportButton = new JButton("Export Data");
             exportButton.addActionListener(e -> exportTableData(table, tableModel));
             buttonPanel.add(exportButton);
             
@@ -1530,7 +1576,7 @@ public class ActivityManagementPanel extends JPanel {
                     // 构建查询条件
                     Map<String, Object> conditions = new HashMap<>();
                     String selectedType = (String) typeComboBox.getSelectedItem();
-                    if (!"全部".equals(selectedType)) {
+                    if (!"All".equals(selectedType)) {
                         conditions.put("facilityType", selectedType);
                     }
                     
@@ -1543,14 +1589,14 @@ public class ActivityManagementPanel extends JPanel {
                     
                     // 在查询前设置时间相关条件
                     switch (timeRange) {
-                        case "仅现在":
+                        case "Now Only":
                             // 只显示进行中的活动
-                            conditions.put("status", "进行中");
+                            conditions.put("status", "In Progress");
                             break;
-                        case "未来24小时":
+                        case "Next 24 Hours":
                             endTimeFilter = now.plusHours(24);
                             break;
-                        case "未来7天":
+                        case "Next 7 Days":
                             endTimeFilter = now.plusDays(7);
                             break;
                     }
@@ -1589,12 +1635,11 @@ public class ActivityManagementPanel extends JPanel {
                                 location = getCanteenInfo(canteenId);
                             }
                         } catch (Exception e) {
-                            // 记录异常
+                            // Log exception
                         }
                         
                         // 处理时间显示
-                        String startTimeStr = "-";
-                        String endTimeStr = "-";
+                        // 移除未使用的变量
                         Date startTimeDate = null;
                         Date endTimeDate = null;
                         boolean isWithinTimeRange = true;
@@ -1604,7 +1649,7 @@ public class ActivityManagementPanel extends JPanel {
                             LocalDateTime startTime = null;
                             LocalDateTime endTime = null;
                             
-                            // 处理不同类型的日期对象
+                            // Handle different types of date objects
                             if (datetimeObj instanceof LocalDateTime) {
                                 startTime = (LocalDateTime) datetimeObj;
                             } else if (datetimeObj instanceof Date) {
@@ -1633,17 +1678,14 @@ public class ActivityManagementPanel extends JPanel {
                                     }
                                 }
                                 
-                                // 格式化时间显示
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                                startTimeStr = startTime.format(formatter);
-                                endTimeStr = endTime != null ? endTime.format(formatter) : "未设置";
+                                
                                 
                                 // 转换为Date对象用于排序
                                 startTimeDate = Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant());
                                 endTimeDate = endTime != null ? Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant()) : null;
                                 
                                 // 检查是否在时间范围内 - 修正筛选条件
-                                if (!"仅现在".equals(timeRange)) {
+                                if (!"Now Only".equals(timeRange)) {
                                     isWithinTimeRange = startTime.isBefore(endTimeFilter);
                                 }
                             } else {
@@ -1653,11 +1695,11 @@ public class ActivityManagementPanel extends JPanel {
                         }
                         
                         // 冲突原因
-                        String conflictReason = "进行中活动";
-                        if ("计划中".equals(status)) {
-                            conflictReason = "已计划活动";
-                        } else if ("暂停中".equals(status)) {
-                            conflictReason = "暂停中活动";
+                        String conflictReason = "In Progress Activity";
+                        if ("Planned".equals(status)) {
+                            conflictReason = "Planned Activity";
+                        } else if ("Paused".equals(status)) {
+                            conflictReason = "Paused Activity";
                         }
                         
                         // 只添加在时间范围内的活动，并确保类型一致性
@@ -1674,12 +1716,12 @@ public class ActivityManagementPanel extends JPanel {
                     
                     // 更新统计信息
                     int totalUnavailable = tableModel.getRowCount();
-                    statsLabel.setText("总计: " + totalUnavailable + " 个不可用地点");
+                    statsLabel.setText("Total: " + totalUnavailable + " Unavailable Locations");
                     
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(locationDialog, 
                             "查询不可用地点时发生错误: " + ex.getMessage(), 
-                            "错误", JOptionPane.ERROR_MESSAGE);
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
                             "查看不可用地点", "查询失败: " + ex.getMessage());
                 }
@@ -1695,7 +1737,7 @@ public class ActivityManagementPanel extends JPanel {
             locationDialog.setVisible(true);
             
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "查看不可用地点时发生错误: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "View Unavailable Locations Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), "查看不可用地点", "操作失败: " + ex.getMessage());
         }
     }
@@ -1713,11 +1755,11 @@ public class ActivityManagementPanel extends JPanel {
                 String name = building.get("building_name") != null ? building.get("building_name").toString() : "";
                 return code + " - " + name;
             }
-            return "未知建筑物";
+            return "Unknown Building";
         } catch (Exception e) {
             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
                     "获取建筑物信息", "查询失败: " + e.getMessage());
-            return "未知建筑物";
+            return "Unknown Building";
         }
     }
     
@@ -1731,13 +1773,13 @@ public class ActivityManagementPanel extends JPanel {
             if (!results.isEmpty()) {
                 Map<String, Object> room = results.get(0);
                 String name = room.get("name") != null ? room.get("name").toString() : "";
-                return "房间: " + name;
+                return "Room: " + name;
             }
-            return "未知房间";
+            return "Unknown Room";
         } catch (Exception e) {
             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
                     "获取房间信息", "查询失败: " + e.getMessage());
-            return "未知房间";
+            return "Unknown Room";
         }
     }
     
@@ -1767,13 +1809,13 @@ public class ActivityManagementPanel extends JPanel {
                                 "获取楼层建筑信息", "查询失败: " + e.getMessage());
                     }
                 }
-                return buildingCode + "-" + levelNumber + "楼";
+                return buildingCode + "-" + levelNumber + "F";
             }
-            return "未知楼层";
+            return "Unknown Level";
         } catch (Exception e) {
             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
                     "获取楼层信息", "查询失败: " + e.getMessage());
-            return "未知楼层";
+            return "Unknown Level";  
         }
     }
     
@@ -1787,13 +1829,13 @@ public class ActivityManagementPanel extends JPanel {
             if (!results.isEmpty()) {
                 Map<String, Object> square = results.get(0);
                 String name = square.get("name") != null ? square.get("name").toString() : "";
-                return "广场: " + name;
+                return "Square: " + name;
             }
-            return "未知广场";
+            return "Unknown Square";  
         } catch (Exception e) {
             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
                     "获取广场信息", "查询失败: " + e.getMessage());
-            return "未知广场";
+            return "Unknown Square";
         }
     }
     
@@ -1807,13 +1849,13 @@ public class ActivityManagementPanel extends JPanel {
             if (!results.isEmpty()) {
                 Map<String, Object> gate = results.get(0);
                 String name = gate.get("name") != null ? gate.get("name").toString() : "";
-                return "大门: " + name;
+                return "Gate: " + name;
             }
-            return "未知大门";
+            return "Unknown Gate";  
         } catch (Exception e) {
             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
                     "获取大门信息", "查询失败: " + e.getMessage());
-            return "未知大门";
+            return "Unknown Gate";
         }
     }
     
@@ -1829,11 +1871,11 @@ public class ActivityManagementPanel extends JPanel {
                 String name = canteen.get("name") != null ? canteen.get("name").toString() : "";
                 return "食堂: " + name;
             }
-            return "未知食堂";
+            return "Unknown Canteen";
         } catch (Exception e) {
             HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
                     "获取食堂信息", "查询失败: " + e.getMessage());
-            return "未知食堂";
+            return "Unknown Canteen";
         }
     }
     
@@ -1945,11 +1987,11 @@ public class ActivityManagementPanel extends JPanel {
     // 导出表格数据为CSV文件
     private void exportTableData(JTable table, DefaultTableModel tableModel) {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("导出数据");
+        fileChooser.setDialogTitle("Export Unavailable Locations Data");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         
         // 设置默认文件名
-        String defaultFileName = "不可用地点_" + 
+        String defaultFileName = "Unavailable_Locations_" + 
                 new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv";
         fileChooser.setSelectedFile(new File(defaultFileName));
         
@@ -1989,16 +2031,16 @@ public class ActivityManagementPanel extends JPanel {
                     writer.println();
                 }
                 
-                JOptionPane.showMessageDialog(this, "数据导出成功!\n文件保存至: " + file.getAbsolutePath(), 
-                        "导出成功", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Unavailable Locations Data Exported Successfully!\nFile Saved: " + file.getAbsolutePath(), 
+                        "Export Success", JOptionPane.INFORMATION_MESSAGE);
                 HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                        "导出不可用地点数据", "成功导出" + tableModel.getRowCount() + "条记录到文件: " + file.getAbsolutePath());
+                        "Export Unavailable Locations Data", "Successfully exported " + tableModel.getRowCount() + " records to file: " + file.getAbsolutePath());
                 
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, "导出数据失败: " + ex.getMessage(), 
-                        "导出失败", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Unavailable Locations Data Export Failed: " + ex.getMessage(), 
+                        "Export Failed", JOptionPane.ERROR_MESSAGE);
                 HtmlLogger.logError(authService.getCurrentUserId(), authService.getCurrentRole(), 
-                        "导出不可用地点数据", "导出失败: " + ex.getMessage());
+                        "Export Unavailable Locations Data", "Export Failed: " + ex.getMessage());
             }
         }
     }
@@ -2006,7 +2048,7 @@ public class ActivityManagementPanel extends JPanel {
     // 显示活动详情对话框
     private void showActivityDetailDialog(Map<String, Object> activity) {
         JDialog detailDialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), 
-                "活动详情 - " + activity.get("title"), true);
+                "Unavailable Locations Details - " + activity.get("title"), true);
         detailDialog.setSize(500, 600);
         
         // 创建滚动面板
@@ -2015,14 +2057,14 @@ public class ActivityManagementPanel extends JPanel {
         contentPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
         // 添加活动信息
-        addDetailRow(contentPanel, "活动ID:", activity.get("activityId"));
-        addDetailRow(contentPanel, "活动标题:", activity.get("title"));
-        addDetailRow(contentPanel, "活动类型:", activity.get("activityType"));
-        addDetailRow(contentPanel, "活动状态:", activity.get("status"));
-        addDetailRow(contentPanel, "活动描述:", activity.get("description"));
-        addDetailRow(contentPanel, "负责人ID:", activity.get("responsibleId"));
-        addDetailRow(contentPanel, "负责人姓名:", activity.get("responsibleName"));
-        addDetailRow(contentPanel, "地点类型:", activity.get("facilityType"));
+        addDetailRow(contentPanel, "AcivityID:", activity.get("activityId"));
+        addDetailRow(contentPanel, "title:", activity.get("title"));
+        addDetailRow(contentPanel, "Facility Type:", activity.get("facilityType"));
+        addDetailRow(contentPanel, "Status:", activity.get("status"));
+        addDetailRow(contentPanel, "Description:", activity.get("description"));
+        addDetailRow(contentPanel, "Responsible ID:", activity.get("responsibleId"));
+        addDetailRow(contentPanel, "Responsible Name:", activity.get("responsibleName"));
+        addDetailRow(contentPanel, "Facility Type:", activity.get("facilityType"));
         
         // 添加地点信息
         String facilityType = activity.get("facilityType") != null ? activity.get("facilityType").toString() : "";
@@ -2050,7 +2092,7 @@ public class ActivityManagementPanel extends JPanel {
         } catch (Exception e) {
             // 忽略异常
         }
-        addDetailRow(contentPanel, "活动地点:", locationInfo);
+        addDetailRow(contentPanel, "Location:", locationInfo);
         
         // 添加时间信息
         Object datetimeObj = activity.get("activityDatetime");
@@ -2061,7 +2103,7 @@ public class ActivityManagementPanel extends JPanel {
             } else if (datetimeObj instanceof Date) {
                 startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format((Date) datetimeObj);
             }
-            addDetailRow(contentPanel, "开始时间:", startTime);
+            addDetailRow(contentPanel, "Start:", startTime);
             
             // 计算结束时间
             if (activity.get("expectedUnavailableDuration") != null) {
@@ -2077,21 +2119,21 @@ public class ActivityManagementPanel extends JPanel {
                         cal.add(Calendar.MINUTE, minutes);
                         endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(cal.getTime());
                     }
-                    addDetailRow(contentPanel, "预计结束时间:", endTime);
+                    addDetailRow(contentPanel, "End:", endTime);
                 } catch (Exception e) {
                     // 忽略异常
                 }
             }
         }
         
-        addDetailRow(contentPanel, "创建时间:", activity.get("createTime"));
-        addDetailRow(contentPanel, "更新时间:", activity.get("updateTime"));
+        addDetailRow(contentPanel, "Create Time:", activity.get("createTime"));
+        addDetailRow(contentPanel, "Update Time:", activity.get("updateTime"));
         
         scrollPane.setViewportView(contentPanel);
         
         // 添加关闭按钮
         JPanel buttonPanel = new JPanel();
-        JButton closeButton = new JButton("关闭");
+        JButton closeButton = new JButton("Close");
         closeButton.addActionListener(e -> detailDialog.dispose());
         buttonPanel.add(closeButton);
         
