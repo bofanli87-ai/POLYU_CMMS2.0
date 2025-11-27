@@ -10,7 +10,7 @@ public class Activity {
     private String status;
     private String priority;
     private Date date;
-    private Integer expectedDowntime; // 存储分钟数
+    private Integer expectedDowntime;
     private Date actualCompletionDatetime;
     private int createdByStaffId;
     private Integer weatherId;
