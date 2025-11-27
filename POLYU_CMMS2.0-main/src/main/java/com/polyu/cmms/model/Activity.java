@@ -48,7 +48,8 @@ public class Activity {
         this.facilityType = "none";
         this.activeFlag = "Y";
     }
-    
+
+
     // getter and setter methods
     public int getActivityId() { return activityId; }
     public void setActivityId(int activityId) { this.activityId = activityId; }
