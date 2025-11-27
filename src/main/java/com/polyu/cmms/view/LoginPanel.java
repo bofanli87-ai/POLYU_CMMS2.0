@@ -83,7 +83,7 @@ public class LoginPanel extends JPanel {
             try {
                 if (authService.login(username, password)) {
                     // Login successful, record log
-                    HtmlLogger.logSuccess(authService.getCurrentUserId(), authService.getCurrentRole(), "用户登录", "用户" + username + "登录成功");
+                    HtmlLogger.logSuccess(authService.getCurrentUserId(), authService.getCurrentRole(), "User Login", "User " + username + " login successfully");
                     
                     // 显示主界面并根据权限调整
                     // 由于系统已取消登录功能，此处代码已不再使用

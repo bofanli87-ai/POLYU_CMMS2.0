@@ -74,8 +74,8 @@ public class MainFrame extends JFrame {
             // 确保userId不为null，避免空指针异常
             Integer userId = authService.getCurrentUserId();
             String role = authService.getCurrentRole();
-            HtmlLogger.logError(userId != null ? userId : -1, role != null ? role : "未知角色", 
-                    "权限检查", "权限检查失败: " + ex.getMessage());
+            HtmlLogger.logError(userId != null ? userId : -1, role != null ? role : "Unknown Role", 
+                    "Permission Check", "Permission check failed: " + ex.getMessage());
         }
         
         // 添加用户信息菜单
@@ -89,11 +89,21 @@ public class MainFrame extends JFrame {
     
     // 处理退出
     private void handleExit() {
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit the system?", "Exit Confirmation", JOptionPane.YES_NO_OPTION);
+        // 使用自定义按钮文本，将"是"、"否"改为"Yes"、"No"
+        Object[] options = {"Yes", "No"};
+        int confirm = JOptionPane.showOptionDialog(this, 
+                "Are you sure you want to exit the system?", 
+                "Exit Confirmation", 
+                JOptionPane.YES_NO_OPTION, 
+                JOptionPane.QUESTION_MESSAGE, 
+                null, 
+                options, 
+                options[0]);
+        
         if (confirm == JOptionPane.YES_OPTION) {
             AuthService authService = AuthService.getInstance();
             // 记录系统退出日志
-            HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), "系统退出", "用户退出系统");
+            HtmlLogger.logInfo(authService.getCurrentUserId(), authService.getCurrentRole(), "System Exit", "User exits the system");
             System.exit(0);
         }
     }

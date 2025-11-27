@@ -62,16 +62,16 @@ public class QueryReportPanel extends JPanel {
 
     private JPanel createNavigationPanel() {
         JPanel navigationPanel = new JPanel(new GridLayout(0, 1, 5, 5));
-        navigationPanel.setBorder(BorderFactory.createTitledBorder("查询类型"));
+        navigationPanel.setBorder(BorderFactory.createTitledBorder("Query"));
         navigationPanel.setBackground(PANEL_BACKGROUND);
 
         // 创建导航按钮
-        JButton sqlQueryButton = createNavButton("SQL查询");
-        JButton buildingActivityButton = createNavButton("建筑物活动查询");
-        JButton staffActivityButton = createNavButton("员工活动查询");
-        JButton chemicalUsageButton = createNavButton("化学物质使用查询");
-        JButton equipmentActivityButton = createNavButton("设备活动查询");
-        JButton maintenanceRecordButton = createNavButton("维护记录查询");
+        JButton sqlQueryButton = createNavButton("SQL Query");
+        JButton buildingActivityButton = createNavButton("Building Activity Query");
+        JButton staffActivityButton = createNavButton("Staff Activity Query");
+        JButton chemicalUsageButton = createNavButton("Chemical Usage Query");
+        JButton equipmentActivityButton = createNavButton("Equipment Activity Query");
+        JButton maintenanceRecordButton = createNavButton("Maintenance Record Query");
 
         // 添加按钮监听器
         sqlQueryButton.addActionListener(new NavigationListener("sql"));
@@ -121,7 +121,7 @@ public class QueryReportPanel extends JPanel {
             setBackground(PANEL_BACKGROUND);
 
             // 标题
-            JLabel titleLabel = createSectionTitle("SQL查询");
+            JLabel titleLabel = createSectionTitle("SQL Query");
             add(titleLabel, BorderLayout.NORTH);
 
             // 主内容区域
@@ -130,7 +130,7 @@ public class QueryReportPanel extends JPanel {
 
             // SQL输入区域
             JPanel sqlInputPanel = new JPanel(new BorderLayout(5, 5));
-            sqlInputPanel.setBorder(BorderFactory.createTitledBorder("SQL语句输入"));
+            sqlInputPanel.setBorder(BorderFactory.createTitledBorder("SQL Statement Input"));
             sqlTextArea = new JTextArea(8, 50);
             sqlTextArea.setLineWrap(true);
             sqlTextArea.setWrapStyleWord(true);
@@ -141,8 +141,8 @@ public class QueryReportPanel extends JPanel {
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             buttonPanel.setBackground(PANEL_BACKGROUND);
 
-            JButton executeButton = new JButton("执行查询");
-            JButton clearButton = new JButton("清空");
+            JButton executeButton = new JButton("Execute Query");
+            JButton clearButton = new JButton("Clear");
 
             // 执行查询按钮事件
             executeButton.addActionListener(e -> executeSqlQuery());
@@ -159,7 +159,7 @@ public class QueryReportPanel extends JPanel {
 
             // 结果区域
             JPanel resultPanel = new JPanel(new BorderLayout(5, 5));
-            resultPanel.setBorder(BorderFactory.createTitledBorder("查询结果"));
+            resultPanel.setBorder(BorderFactory.createTitledBorder("Query Results"));
             resultTextArea = new JTextArea(15, 50);
             resultTextArea.setEditable(false);
             resultTextArea.setLineWrap(true);
@@ -176,7 +176,7 @@ public class QueryReportPanel extends JPanel {
         private void executeSqlQuery() {
             String sql = sqlTextArea.getText().trim();
             if (sql.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "请输入SQL语句", "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please enter a SQL statement", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -184,22 +184,22 @@ public class QueryReportPanel extends JPanel {
                 List<Map<String, Object>> results = queryService.executeCustomQuery(sql);
                 displayResults(results);
             } catch (SQLException ex) {
-                resultTextArea.setText("执行SQL查询时出错:\n" + ex.getMessage());
+                resultTextArea.setText("Error executing SQL query:\n" + ex.getMessage());
             } catch (Exception ex) {
-                resultTextArea.setText("发生错误:\n" + ex.getMessage());
+                resultTextArea.setText("Error:\n" + ex.getMessage());
             }
         }
 
         private void displayResults(List<Map<String, Object>> results) {
             if (results == null || results.isEmpty()) {
-                resultTextArea.setText("查询成功，但未返回任何结果。");
+                resultTextArea.setText("Query executed successfully, but no results returned.");
                 return;
             }
 
             StringBuilder sb = new StringBuilder();
             // 显示列名
             Map<String, Object> firstRow = results.get(0);
-            sb.append("列名: ");
+            sb.append("Column Names: ");
             for (String column : firstRow.keySet()) {
                 sb.append(column).append(" | ");
             }
@@ -213,7 +213,7 @@ public class QueryReportPanel extends JPanel {
                 sb.append("\n");
             }
 
-            sb.append("\n总计: ").append(results.size()).append(" 条记录");
+            sb.append("\nTotal Records: ").append(results.size());
             resultTextArea.setText(sb.toString());
         }
     }
@@ -235,14 +235,14 @@ public class QueryReportPanel extends JPanel {
         private void initComponents() {
             // 查询条件面板
             JPanel criteriaPanel = new JPanel(new BorderLayout(5, 5));
-            criteriaPanel.setBorder(BorderFactory.createTitledBorder("查询条件"));
+            criteriaPanel.setBorder(BorderFactory.createTitledBorder("Query Criteria"));
             JPanel innerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             
-            innerPanel.add(new JLabel("选择设备:"));
+            innerPanel.add(new JLabel("Select Equipment:"));
             equipmentComboBox = new JComboBox<>();
             innerPanel.add(equipmentComboBox);
             
-            queryButton = new JButton("查询");
+            queryButton = new JButton("Query");
             innerPanel.add(queryButton);
             
             criteriaPanel.add(innerPanel, BorderLayout.CENTER);
@@ -260,7 +260,7 @@ public class QueryReportPanel extends JPanel {
 
             // 结果面板
             JPanel resultPanel = new JPanel(new BorderLayout(5, 5));
-            resultPanel.setBorder(BorderFactory.createTitledBorder("查询结果"));
+            resultPanel.setBorder(BorderFactory.createTitledBorder("Query Results"));
             resultPanel.add(scrollPane, BorderLayout.CENTER);
 
             // 将面板添加到主面板
@@ -277,7 +277,7 @@ public class QueryReportPanel extends JPanel {
         
         private void queryEquipmentActivities() {
             // 这里实现查询逻辑
-            JOptionPane.showMessageDialog(this, "设备活动查询功能待实现", "提示", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Equipment Activity Query Functionality is Under Development", "Information", JOptionPane.INFORMATION_MESSAGE);
         }
     }
     
@@ -298,22 +298,22 @@ public class QueryReportPanel extends JPanel {
         private void initComponents() {
             // 查询条件面板
             JPanel criteriaPanel = new JPanel(new BorderLayout(5, 5));
-            criteriaPanel.setBorder(BorderFactory.createTitledBorder("查询条件"));
+            criteriaPanel.setBorder(BorderFactory.createTitledBorder("Query Criteria"));
             JPanel innerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             
-            innerPanel.add(new JLabel("选择建筑物:"));
+            innerPanel.add(new JLabel("Select Building:"));
             buildingComboBox = new JComboBox<>();
             innerPanel.add(buildingComboBox);
             
-            innerPanel.add(new JLabel("选择房间:"));
+            innerPanel.add(new JLabel("Select Room:"));
             roomComboBox = new JComboBox<>();
             innerPanel.add(roomComboBox);
             
-            innerPanel.add(new JLabel("选择设备:"));
+            innerPanel.add(new JLabel("Select Equipment:"));
             equipmentComboBox = new JComboBox<>();
             innerPanel.add(equipmentComboBox);
             
-            queryButton = new JButton("查询");
+            queryButton = new JButton("Query");
             innerPanel.add(queryButton);
             
             criteriaPanel.add(innerPanel, BorderLayout.CENTER);
@@ -331,7 +331,7 @@ public class QueryReportPanel extends JPanel {
 
             // 结果面板
             JPanel resultPanel = new JPanel(new BorderLayout(5, 5));
-            resultPanel.setBorder(BorderFactory.createTitledBorder("查询结果"));
+            resultPanel.setBorder(BorderFactory.createTitledBorder("Query Results"));
             resultPanel.add(scrollPane, BorderLayout.CENTER);
 
             // 将面板添加到主面板
@@ -348,7 +348,7 @@ public class QueryReportPanel extends JPanel {
         
         private void queryMaintenanceRecords() {
             // 这里实现查询逻辑
-            JOptionPane.showMessageDialog(this, "维护记录查询功能待实现", "提示", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Maintenance Record Query Functionality is Under Development", "Information", JOptionPane.INFORMATION_MESSAGE);
         }
     }
     
@@ -365,7 +365,7 @@ public class QueryReportPanel extends JPanel {
             setBackground(PANEL_BACKGROUND);
 
             // 标题
-            JLabel titleLabel = new JLabel("建筑物活动查询", JLabel.CENTER);
+            JLabel titleLabel = new JLabel("Building Activity Query", JLabel.CENTER);
             add(titleLabel, BorderLayout.NORTH);
 
             // 查询条件面板
@@ -386,8 +386,8 @@ public class QueryReportPanel extends JPanel {
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             buttonPanel.setBackground(PANEL_BACKGROUND);
 
-            JButton queryButton = new JButton("查询");
-            JButton exportButton = new JButton("导出结果");
+            JButton queryButton = new JButton("Query");
+            JButton exportButton = new JButton("Export Results");
 
             queryButton.addActionListener(e -> queryBuildingActivities());
             exportButton.addActionListener(e -> exportResults());
@@ -399,24 +399,24 @@ public class QueryReportPanel extends JPanel {
 
         private JPanel createCriteriaPanel() {
             JPanel criteriaPanel = new JPanel(new GridLayout(4, 2));
-            criteriaPanel.setBorder(BorderFactory.createTitledBorder("查询条件"));
+            criteriaPanel.setBorder(BorderFactory.createTitledBorder("Query Criteria"));
             criteriaPanel.setBackground(PANEL_BACKGROUND);
 
             // 建筑物选择
-            JLabel buildingLabel = new JLabel("建筑物:");
+            JLabel buildingLabel = new JLabel("Building:");
             buildingComboBox = new JComboBox<>();
 
             // 日期选择
-            JLabel startDateLabel = new JLabel("开始日期:");
+            JLabel startDateLabel = new JLabel("Start Date:");
             startDateField = new JTextField();
-            startDateField.setToolTipText("格式: YYYY-MM-DD，例如: 2024-01-01");
+            startDateField.setToolTipText("Format: YYYY-MM-DD, e.g., 2024-01-01");
 
-            JLabel endDateLabel = new JLabel("结束日期:");
+            JLabel endDateLabel = new JLabel("End Date:");
             endDateField = new JTextField();
-            endDateField.setToolTipText("格式: YYYY-MM-DD，例如: 2024-12-31");
+            endDateField.setToolTipText("Format: YYYY-MM-DD, e.g., 2024-12-31");
 
             // 危险化学品选项
-            JLabel hazardousLabel = new JLabel("是否含危险化学品:");
+            JLabel hazardousLabel = new JLabel("Contains Hazardous Chemicals:");
             hazardousCheckBox = new JCheckBox();
             hazardousCheckBox.setBackground(PANEL_BACKGROUND);
 
@@ -439,7 +439,7 @@ public class QueryReportPanel extends JPanel {
         private void loadBuildings() {
             try {
                 List<Map<String, Object>> buildings = buildingService.getAllActiveBuildings();
-                buildingComboBox.addItem("全部"); // 添加"全部"选项
+                buildingComboBox.addItem("All"); // 添加"全部"选项
                 for (Map<String, Object> building : buildings) {
                     String buildingCode = (String) building.get("buildingCode");
                     if (buildingCode != null) {
@@ -447,8 +447,8 @@ public class QueryReportPanel extends JPanel {
                     }
                 }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "加载建筑物列表失败: " + ex.getMessage(),
-                        "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to load building list: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -468,7 +468,7 @@ public class QueryReportPanel extends JPanel {
                 sql.append("WHERE a.active_flag = 'Y' ");
 
                 // 添加建筑物条件
-                if (!"全部".equals(selectedBuilding)) {
+                if (!"All".equals(selectedBuilding)) {
                     sql.append("AND b.building_code = ? ");
                 }
 
@@ -489,7 +489,7 @@ public class QueryReportPanel extends JPanel {
 
                 // 执行查询
                 List<Object> params = new java.util.ArrayList<>();
-                if (!"全部".equals(selectedBuilding)) {
+                if (!"All".equals(selectedBuilding)) {
                     params.add(selectedBuilding);
                 }
                 if (!startDate.isEmpty()) {
@@ -505,14 +505,14 @@ public class QueryReportPanel extends JPanel {
                 displayTableResults(results);
 
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "查询失败: " + ex.getMessage(),
-                        "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to query activities: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
         private void displayTableResults(List<Map<String, Object>> results) {
             if (results == null || results.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "未找到匹配的活动记录", "提示", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No matching activity records found", "Info", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -535,7 +535,7 @@ public class QueryReportPanel extends JPanel {
         }
 
         private void exportResults() {
-            JOptionPane.showMessageDialog(this, "导出功能待实现", "提示", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Export feature is not implemented yet", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -566,8 +566,8 @@ public class QueryReportPanel extends JPanel {
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             buttonPanel.setBackground(PANEL_BACKGROUND);
 
-            JButton queryButton = new JButton("查询");
-            JButton exportButton = new JButton("导出结果");
+            JButton queryButton = new JButton("Query Activities");
+            JButton exportButton = new JButton("Export Results");
 
             queryButton.addActionListener(e -> queryStaffActivities());
             exportButton.addActionListener(e -> exportResults());
@@ -579,11 +579,11 @@ public class QueryReportPanel extends JPanel {
 
         private JPanel createCriteriaPanel() {
             JPanel criteriaPanel = new JPanel(new GridLayout(2, 2));
-            criteriaPanel.setBorder(BorderFactory.createTitledBorder("查询条件"));
+            criteriaPanel.setBorder(BorderFactory.createTitledBorder("Query Criteria"));
             criteriaPanel.setBackground(PANEL_BACKGROUND);
 
             // 员工选择
-            JLabel staffLabel = new JLabel("员工姓名:");
+            JLabel staffLabel = new JLabel("Staff Name:");
             staffComboBox = new JComboBox<>();
 
             criteriaPanel.add(staffLabel);
@@ -608,8 +608,8 @@ public class QueryReportPanel extends JPanel {
                     }
                 }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "加载员工列表失败: " + ex.getMessage(),
-                        "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to load staff list: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -617,7 +617,7 @@ public class QueryReportPanel extends JPanel {
             try {
                 String selectedStaff = (String) staffComboBox.getSelectedItem();
                 if (selectedStaff == null) {
-                    JOptionPane.showMessageDialog(this, "请选择员工", "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Please select a staff member", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -640,14 +640,14 @@ public class QueryReportPanel extends JPanel {
                 displayTableResults(results);
 
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "查询失败: " + ex.getMessage(),
-                        "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to query staff activities: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
         private void displayTableResults(List<Map<String, Object>> results) {
             if (results == null || results.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "该员工没有参与任何活动", "提示", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No activities found for the selected staff member", "Information", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -669,7 +669,7 @@ public class QueryReportPanel extends JPanel {
         }
 
         private void exportResults() {
-            JOptionPane.showMessageDialog(this, "导出功能待实现", "提示", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Export feature is not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -684,7 +684,7 @@ public class QueryReportPanel extends JPanel {
             setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
             // 标题
-            JLabel titleLabel = createSectionTitle("化学物质使用查询");
+            JLabel titleLabel = createSectionTitle("Chemical Usage Query");
             add(titleLabel, BorderLayout.NORTH);
 
             // 查询条件面板
@@ -700,8 +700,8 @@ public class QueryReportPanel extends JPanel {
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
             buttonPanel.setBackground(PANEL_BACKGROUND);
 
-            JButton queryButton = QueryReportPanel.this.createActionButton("查询", QueryReportPanel.this.ACCENT_COLOR);
-            JButton exportButton = QueryReportPanel.this.createActionButton("导出结果", QueryReportPanel.this.PRIMARY_COLOR);
+            JButton queryButton = QueryReportPanel.this.createActionButton("Query", QueryReportPanel.this.ACCENT_COLOR);
+            JButton exportButton = QueryReportPanel.this.createActionButton("Export Results", QueryReportPanel.this.PRIMARY_COLOR);
 
             queryButton.addActionListener(e -> queryChemicalUsage());
             exportButton.addActionListener(e -> exportResults());
@@ -716,14 +716,14 @@ public class QueryReportPanel extends JPanel {
             criteriaPanel.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createTitledBorder(
                             BorderFactory.createLineBorder(QueryReportPanel.this.PRIMARY_COLOR, 1),
-                            "查询条件"
+                            "Query Criteria"
                     ),
                     BorderFactory.createEmptyBorder(15, 15, 15, 15)
             ));
             criteriaPanel.setBackground(PANEL_BACKGROUND);
 
             // 化学品选择
-            JLabel chemicalLabel = QueryReportPanel.this.createFieldLabel("化学品名称:");
+            JLabel chemicalLabel = QueryReportPanel.this.createFieldLabel("Chemical Name:");
             chemicalComboBox = QueryReportPanel.this.createStyledComboBox();
 
             criteriaPanel.add(chemicalLabel);
@@ -747,8 +747,8 @@ public class QueryReportPanel extends JPanel {
                     }
                 }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "加载化学品列表失败: " + ex.getMessage(),
-                        "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Load Chemical List Failed: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -756,7 +756,7 @@ public class QueryReportPanel extends JPanel {
             try {
                 String selectedChemical = (String) chemicalComboBox.getSelectedItem();
                 if (selectedChemical == null) {
-                    JOptionPane.showMessageDialog(this, "请选择化学品", "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Please select a chemical", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -779,14 +779,14 @@ public class QueryReportPanel extends JPanel {
                 displayTableResults(results);
 
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "查询失败: " + ex.getMessage(),
-                        "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Query Failed: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
         private void displayTableResults(List<Map<String, Object>> results) {
             if (results == null || results.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "该化学品没有被任何活动使用", "提示", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No activities using this chemical", "Info", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -808,7 +808,7 @@ public class QueryReportPanel extends JPanel {
         }
 
         private void exportResults() {
-            JOptionPane.showMessageDialog(this, "导出功能待实现", "提示", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Export Functionality is Under Development", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
