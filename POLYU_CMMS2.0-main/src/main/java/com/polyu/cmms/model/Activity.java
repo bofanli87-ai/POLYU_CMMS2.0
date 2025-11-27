@@ -43,7 +43,6 @@ public class Activity {
         this.buildingId = buildingId;
         this.areaId = areaId;
         this.hazardLevel = hazardLevel;
-        // 设置默认值
         this.priority = "medium";
         this.facilityType = "none";
         this.activeFlag = "Y";
