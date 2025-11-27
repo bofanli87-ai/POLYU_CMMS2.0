@@ -1,6 +1,13 @@
 package com.polyu.cmms.view;
 
-import com.polyu.cmms.service.*;
+// import com.polyu.cmms.service.*;
+import com.polyu.cmms.service.BuildingService;
+import com.polyu.cmms.service.RoomService;
+import com.polyu.cmms.service.LevelService;
+import com.polyu.cmms.service.SquareService;
+import com.polyu.cmms.service.GateService;
+import com.polyu.cmms.service.CanteenService;
+import com.polyu.cmms.service.AuthService;
 import com.polyu.cmms.util.HtmlLogger;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

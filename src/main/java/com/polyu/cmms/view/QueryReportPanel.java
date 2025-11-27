@@ -52,8 +52,8 @@ public class QueryReportPanel extends JPanel {
         contentPanel.add(new BuildingActivityPanel(), "buildingActivity");
         contentPanel.add(new StaffActivityPanel(), "staffActivity");
         contentPanel.add(new ChemicalUsagePanel(), "chemicalUsage");
-        contentPanel.add(new EquipmentActivityQueryPanel(), "equipmentActivity");
-        contentPanel.add(new MaintenanceRecordQueryPanel(), "maintenanceRecord");
+        // contentPanel.add(new EquipmentActivityQueryPanel(), "equipmentActivity");
+        // contentPanel.add(new MaintenanceRecordQueryPanel(), "maintenanceRecord");
 
         // 添加面板到主面板
         add(navigationPanel, BorderLayout.WEST);
@@ -70,24 +70,24 @@ public class QueryReportPanel extends JPanel {
         JButton buildingActivityButton = createNavButton("Building Activity Query");
         JButton staffActivityButton = createNavButton("Staff Activity Query");
         JButton chemicalUsageButton = createNavButton("Chemical Usage Query");
-        JButton equipmentActivityButton = createNavButton("Equipment Activity Query");
-        JButton maintenanceRecordButton = createNavButton("Maintenance Record Query");
+        // JButton equipmentActivityButton = createNavButton("Equipment Activity Query");
+        // JButton maintenanceRecordButton = createNavButton("Maintenance Record Query");
 
         // 添加按钮监听器
         sqlQueryButton.addActionListener(new NavigationListener("sql"));
         buildingActivityButton.addActionListener(new NavigationListener("buildingActivity"));
         staffActivityButton.addActionListener(new NavigationListener("staffActivity"));
         chemicalUsageButton.addActionListener(new NavigationListener("chemicalUsage"));
-        equipmentActivityButton.addActionListener(new NavigationListener("equipmentActivity"));
-        maintenanceRecordButton.addActionListener(new NavigationListener("maintenanceRecord"));
+        // equipmentActivityButton.addActionListener(new NavigationListener("equipmentActivity"));
+        // maintenanceRecordButton.addActionListener(new NavigationListener("maintenanceRecord"));
 
         // 添加按钮到导航面板
         navigationPanel.add(sqlQueryButton);
         navigationPanel.add(buildingActivityButton);
         navigationPanel.add(staffActivityButton);
         navigationPanel.add(chemicalUsageButton);
-        navigationPanel.add(equipmentActivityButton);
-        navigationPanel.add(maintenanceRecordButton);
+        // navigationPanel.add(equipmentActivityButton);
+        // navigationPanel.add(maintenanceRecordButton);
 
         return navigationPanel;
     }
@@ -218,139 +218,139 @@ public class QueryReportPanel extends JPanel {
         }
     }
 
-    // 设备活动查询面板
-    private class EquipmentActivityQueryPanel extends JPanel {
-        private JComboBox<String> equipmentComboBox;
-        private JButton queryButton;
-        private JTable resultTable;
-        private DefaultTableModel tableModel;
+    // // 设备活动查询面板
+    // private class EquipmentActivityQueryPanel extends JPanel {
+    //     private JComboBox<String> equipmentComboBox;
+    //     private JButton queryButton;
+    //     private JTable resultTable;
+    //     private DefaultTableModel tableModel;
 
-        public EquipmentActivityQueryPanel() {
-            setLayout(new BorderLayout(10, 10));
-            setBackground(PANEL_BACKGROUND);
-            initComponents();
-            setupListeners();
-        }
+    //     public EquipmentActivityQueryPanel() {
+    //         setLayout(new BorderLayout(10, 10));
+    //         setBackground(PANEL_BACKGROUND);
+    //         initComponents();
+    //         setupListeners();
+    //     }
 
-        private void initComponents() {
-            // 查询条件面板
-            JPanel criteriaPanel = new JPanel(new BorderLayout(5, 5));
-            criteriaPanel.setBorder(BorderFactory.createTitledBorder("Query Criteria"));
-            JPanel innerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    //     private void initComponents() {
+    //         // 查询条件面板
+    //         JPanel criteriaPanel = new JPanel(new BorderLayout(5, 5));
+    //         criteriaPanel.setBorder(BorderFactory.createTitledBorder("Query Criteria"));
+    //         JPanel innerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             
-            innerPanel.add(new JLabel("Select Equipment:"));
-            equipmentComboBox = new JComboBox<>();
-            innerPanel.add(equipmentComboBox);
+    //         innerPanel.add(new JLabel("Select Equipment:"));
+    //         equipmentComboBox = new JComboBox<>();
+    //         innerPanel.add(equipmentComboBox);
             
-            queryButton = new JButton("Query");
-            innerPanel.add(queryButton);
+    //         queryButton = new JButton("Query");
+    //         innerPanel.add(queryButton);
             
-            criteriaPanel.add(innerPanel, BorderLayout.CENTER);
+    //         criteriaPanel.add(innerPanel, BorderLayout.CENTER);
 
-            // 结果表格
-            resultTable = new JTable() {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
-            tableModel = new DefaultTableModel();
-            resultTable.setModel(tableModel);
-            JScrollPane scrollPane = new JScrollPane(resultTable);
+    //         // 结果表格
+    //         resultTable = new JTable() {
+    //             @Override
+    //             public boolean isCellEditable(int row, int column) {
+    //                 return false;
+    //             }
+    //         };
+    //         tableModel = new DefaultTableModel();
+    //         resultTable.setModel(tableModel);
+    //         JScrollPane scrollPane = new JScrollPane(resultTable);
 
-            // 结果面板
-            JPanel resultPanel = new JPanel(new BorderLayout(5, 5));
-            resultPanel.setBorder(BorderFactory.createTitledBorder("Query Results"));
-            resultPanel.add(scrollPane, BorderLayout.CENTER);
+    //         // 结果面板
+    //         JPanel resultPanel = new JPanel(new BorderLayout(5, 5));
+    //         resultPanel.setBorder(BorderFactory.createTitledBorder("Query Results"));
+    //         resultPanel.add(scrollPane, BorderLayout.CENTER);
 
-            // 将面板添加到主面板
-            JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
-            contentPanel.add(criteriaPanel, BorderLayout.NORTH);
-            contentPanel.add(resultPanel, BorderLayout.CENTER);
+    //         // 将面板添加到主面板
+    //         JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
+    //         contentPanel.add(criteriaPanel, BorderLayout.NORTH);
+    //         contentPanel.add(resultPanel, BorderLayout.CENTER);
 
-            add(contentPanel, BorderLayout.CENTER);
-        }
+    //         add(contentPanel, BorderLayout.CENTER);
+    //     }
         
-        private void setupListeners() {
-            queryButton.addActionListener(e -> queryEquipmentActivities());
-        }
+    //     private void setupListeners() {
+    //         queryButton.addActionListener(e -> queryEquipmentActivities());
+    //     }
         
-        private void queryEquipmentActivities() {
-            // 这里实现查询逻辑
-            JOptionPane.showMessageDialog(this, "Equipment Activity Query Functionality is Under Development", "Information", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
+    //     private void queryEquipmentActivities() {
+    //         // 这里实现查询逻辑
+    //         JOptionPane.showMessageDialog(this, "Equipment Activity Query Functionality is Under Development", "Information", JOptionPane.INFORMATION_MESSAGE);
+    //     }
+    // }
     
-    // 维护记录查询面板
-    private class MaintenanceRecordQueryPanel extends JPanel {
-        private JComboBox<String> buildingComboBox, roomComboBox, equipmentComboBox;
-        private JButton queryButton;
-        private JTable resultTable;
-        private DefaultTableModel tableModel;
+    // // 维护记录查询面板
+    // private class MaintenanceRecordQueryPanel extends JPanel {
+    //     private JComboBox<String> buildingComboBox, roomComboBox, equipmentComboBox;
+    //     private JButton queryButton;
+    //     private JTable resultTable;
+    //     private DefaultTableModel tableModel;
 
-        public MaintenanceRecordQueryPanel() {
-            setLayout(new BorderLayout(10, 10));
-            setBackground(PANEL_BACKGROUND);
-            initComponents();
-            setupListeners();
-        }
+    //     public MaintenanceRecordQueryPanel() {
+    //         setLayout(new BorderLayout(10, 10));
+    //         setBackground(PANEL_BACKGROUND);
+    //         initComponents();
+    //         setupListeners();
+    //     }
 
-        private void initComponents() {
-            // 查询条件面板
-            JPanel criteriaPanel = new JPanel(new BorderLayout(5, 5));
-            criteriaPanel.setBorder(BorderFactory.createTitledBorder("Query Criteria"));
-            JPanel innerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    //     private void initComponents() {
+    //         // 查询条件面板
+    //         JPanel criteriaPanel = new JPanel(new BorderLayout(5, 5));
+    //         criteriaPanel.setBorder(BorderFactory.createTitledBorder("Query Criteria"));
+    //         JPanel innerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             
-            innerPanel.add(new JLabel("Select Building:"));
-            buildingComboBox = new JComboBox<>();
-            innerPanel.add(buildingComboBox);
+    //         innerPanel.add(new JLabel("Select Building:"));
+    //         buildingComboBox = new JComboBox<>();
+    //         innerPanel.add(buildingComboBox);
             
-            innerPanel.add(new JLabel("Select Room:"));
-            roomComboBox = new JComboBox<>();
-            innerPanel.add(roomComboBox);
+    //         innerPanel.add(new JLabel("Select Room:"));
+    //         roomComboBox = new JComboBox<>();
+    //         innerPanel.add(roomComboBox);
             
-            innerPanel.add(new JLabel("Select Equipment:"));
-            equipmentComboBox = new JComboBox<>();
-            innerPanel.add(equipmentComboBox);
+    //         innerPanel.add(new JLabel("Select Equipment:"));
+    //         equipmentComboBox = new JComboBox<>();
+    //         innerPanel.add(equipmentComboBox);
             
-            queryButton = new JButton("Query");
-            innerPanel.add(queryButton);
+    //         queryButton = new JButton("Query");
+    //         innerPanel.add(queryButton);
             
-            criteriaPanel.add(innerPanel, BorderLayout.CENTER);
+    //         criteriaPanel.add(innerPanel, BorderLayout.CENTER);
 
-            // 结果表格
-            resultTable = new JTable() {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
-            tableModel = new DefaultTableModel();
-            resultTable.setModel(tableModel);
-            JScrollPane scrollPane = new JScrollPane(resultTable);
+    //         // 结果表格
+    //         resultTable = new JTable() {
+    //             @Override
+    //             public boolean isCellEditable(int row, int column) {
+    //                 return false;
+    //             }
+    //         };
+    //         tableModel = new DefaultTableModel();
+    //         resultTable.setModel(tableModel);
+    //         JScrollPane scrollPane = new JScrollPane(resultTable);
 
-            // 结果面板
-            JPanel resultPanel = new JPanel(new BorderLayout(5, 5));
-            resultPanel.setBorder(BorderFactory.createTitledBorder("Query Results"));
-            resultPanel.add(scrollPane, BorderLayout.CENTER);
+    //         // 结果面板
+    //         JPanel resultPanel = new JPanel(new BorderLayout(5, 5));
+    //         resultPanel.setBorder(BorderFactory.createTitledBorder("Query Results"));
+    //         resultPanel.add(scrollPane, BorderLayout.CENTER);
 
-            // 将面板添加到主面板
-            JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
-            contentPanel.add(criteriaPanel, BorderLayout.NORTH);
-            contentPanel.add(resultPanel, BorderLayout.CENTER);
+    //         // 将面板添加到主面板
+    //         JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
+    //         contentPanel.add(criteriaPanel, BorderLayout.NORTH);
+    //         contentPanel.add(resultPanel, BorderLayout.CENTER);
 
-            add(contentPanel, BorderLayout.CENTER);
-        }
+    //         add(contentPanel, BorderLayout.CENTER);
+    //     }
         
-        private void setupListeners() {
-            queryButton.addActionListener(e -> queryMaintenanceRecords());
-        }
+    //     private void setupListeners() {
+    //         queryButton.addActionListener(e -> queryMaintenanceRecords());
+    //     }
         
-        private void queryMaintenanceRecords() {
-            // 这里实现查询逻辑
-            JOptionPane.showMessageDialog(this, "Maintenance Record Query Functionality is Under Development", "Information", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
+    //     private void queryMaintenanceRecords() {
+    //         // 这里实现查询逻辑
+    //         JOptionPane.showMessageDialog(this, "Maintenance Record Query Functionality is Under Development", "Information", JOptionPane.INFORMATION_MESSAGE);
+    //     }
+    // }
     
     // 建筑物活动查询面板
     private class BuildingActivityPanel extends JPanel {
