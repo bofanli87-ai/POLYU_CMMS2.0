@@ -568,7 +568,7 @@ public class StaffManagementPanel extends JPanel {
         
         private void loadSupervisionTree() {
             try {
-                System.out.println("\n===== 开始加载三层树状目录结构 =====");
+                System.out.println("\n===== Loading three-level tree directory structure =====");
                 
                 // 创建根节点，明确显示三层结构标题
                 DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Three-level Supervision Structure");
@@ -579,8 +579,8 @@ public class StaffManagementPanel extends JPanel {
                 // 获取所有role_id为1的员工（行政官）作为顶级节点
                 List<Map<String, Object>> topLevelStaff = getTopLevelStaff();
                 
-                System.out.println("开始构建三层结构:");
-                System.out.println("第1层 - 行政官(role_id=1)数量: " + topLevelStaff.size());
+                System.out.println("Begin constructing the three-tier architecture:");
+                System.out.println("Level 1 - Administrative Officer (role_id=1) Quantity: " + topLevelStaff.size());
                 
                 // 为每个顶级员工（行政官）构建其子树
                 for (Map<String, Object> staff : topLevelStaff) {
@@ -598,7 +598,7 @@ public class StaffManagementPanel extends JPanel {
                             addedStaffIds.add(staffId);
                             
                             // 调用修改后的buildSubordinateTree方法，传递addedStaffIds集合
-                            System.out.println("为行政官(ID=" + staffId + ")构建下属树");
+                            System.out.println("For the Administrator(ID=" + staffId + ")Build a subordinate tree");
                             buildSubordinateTree(staffNode, staffId, 1, addedStaffIds);
                         }
                     }
@@ -888,7 +888,7 @@ public class StaffManagementPanel extends JPanel {
             conditions.put("roleId", 1); // 只获取role_id为1的员工
             List<Map<String, Object>> topLevelStaff = staffService.queryStaff(conditions);
             
-            System.out.println("===== 三层树状目录结构 - 顶级员工(role_id=1) =====");
+            System.out.println("===== Three-level tree directory structure - Top-level employee (role_id=1) =====");
             System.out.println("Number of top-level employees (role_id=1): " + topLevelStaff.size());
             for (Map<String, Object> staff : topLevelStaff) {
                 int staffId = 0;
@@ -910,7 +910,7 @@ public class StaffManagementPanel extends JPanel {
                                   staff.containsKey("firstName") ? (String) staff.get("firstName") : "";
                 String lastName = staff.containsKey("last_name") ? (String) staff.get("last_name") : 
                                  staff.containsKey("lastName") ? (String) staff.get("lastName") : "";
-                System.out.println("顶级员工: ID=" + staffId + ", " + staffNumber + " - " + lastName + " " + firstName);
+                System.out.println("Top-tier employees: ID=" + staffId + ", " + staffNumber + " - " + lastName + " " + firstName);
             }
             System.out.println("=========================================");
             
